@@ -1,0 +1,22 @@
+######################## Filebeat Configuration ############################
+
+#=========================== Filebeat prospectors =============================
+
+# List of prospectors to fetch data.
+filebeat.prospectors:
+#------------------------------ Log prospector --------------------------------
+- input_type: log
+  enabled: true
+  paths:
+    - "/logs/*"
+
+#-------------------------- Elasticsearch output -------------------------------
+output.elasticsearch:
+  enabled: true
+  hosts: [<HOSTS>]
+
+#----------------------------- Logstash output ---------------------------------
+#output.logstash:
+  #enabled: true
+  #hosts: ["localhost:5044"]
+
