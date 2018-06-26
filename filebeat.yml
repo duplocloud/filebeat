@@ -1,5 +1,5 @@
 ######################## Filebeat Configuration ############################
-
+name: <HOSTNAME>
 #=========================== Filebeat prospectors =============================
 
 # List of prospectors to fetch data.
@@ -8,15 +8,26 @@ filebeat.prospectors:
 - input_type: log
   enabled: true
   paths:
-    - "/logs/*"
+    - "/logs/*/*.log"
+  scan_frequency: 5s
+  harvester_buffer_size: 16384
 
 #-------------------------- Elasticsearch output -------------------------------
 output.elasticsearch:
   enabled: true
   hosts: [<HOSTS>]
+  protocol: "https"
+  timeout: 180
+  bulk_max_size: 2
 
 #----------------------------- Logstash output ---------------------------------
 #output.logstash:
   #enabled: true
   #hosts: ["localhost:5044"]
 
+logging.to_files: true
+logging.files:
+  path: ./templogs
+  name: filebeat
+  rotateeverybytes: 10485760 # = 10MB
+  keepfiles: 7
