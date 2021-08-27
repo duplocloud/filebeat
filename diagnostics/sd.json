@@ -1,0 +1,120 @@
+{
+    "Name": "DiagnosticsV3",
+    "DisableAutoProvision": false,
+    "Roles": [
+        {
+            "Tags": [],
+            "Name": "system-svc-es",
+            "DockerImage": "duplocloud/elasticsearch:7.14.0",
+            "Replicas": 1,
+            "NetworkId": "default",
+            "AgentPlatform": 0,
+            "Volumes": "\"/data/es:/usr/share/elasticsearch/data\"",
+            "ExtraConfig": "{\n    \"discovery.type\": \"single-node\"\n}\n",
+            "AllocationTags": "diagnostics",
+            "ApplicationUrl": "",
+            "IsInfraDeployment": false,
+            "SecondaryTenant": "",
+            "LBConfigurations": [
+                {
+                    "ReplicationControllerName": "system-svc-es",
+                    "Protocol": "http",
+                    "Port": "9200",
+                    "DIPAddresses": [],
+                    "HostPort": 0,
+                    "IsInfraDeployment": false,
+                    "ExternalPort": 443,
+                    "IsInternal": true,
+                    "ForHealthCheck": false,
+                    "HealthCheckUrl": "",
+                    "IsNative": true,
+                    "LbType": 0,
+                    "TgCount": 0,
+                    "CertificateArn": "arn:aws:acm:us-west-2:128329325849:certificate/39834e5e-0bc6-44b0-96fe-66e7dcd609e1"
+                }
+            ],
+            "OtherDockerConfig": "{\"User\":\"root\", \"Labels\":{\"co.elastic.logs/enabled\":\"false\"}}",
+            "OtherDockerHostConfig": "{\"NetworkMode\": \"host\", \"CapAdd\": [ \"NET_ADMIN\" ]}",
+            "DeviceIds": [],
+            "Cloud": 0,
+            "IsLBSyncedDeployment": false,
+            "IsDaemonset": false,
+            "IsReplicaCollocationAllowed": false
+        },
+        {
+            "Tags": [],
+            "Name": "system-svc-kibana",
+            "DockerImage": "duplocloud/kibana:7.14.0",
+            "Replicas": 1,
+            "NetworkId": "default",
+            "AgentPlatform": 0,
+            "Volumes": "",
+            "ExtraConfig":  "{\n    \"ELASTICSEARCH_HOSTS\": \"http://localhost:9200\",\n    \"SERVER_BASEPATH\" : \"/proxy/kibana\",\n    \"SERVER_REWRITEBASEPATH\" : true\n}",
+            "AllocationTags": "diagnostics",
+            "ApplicationUrl": "",
+            "IsInfraDeployment": false,
+            "SecondaryTenant": "",
+            "LBConfigurations": [
+                {
+                    "ReplicationControllerName": "system-svc-kibana",
+                    "Protocol": "http",
+                    "Port": "5601",
+                    "DIPAddresses": [],
+                    "HostPort": 0,
+                    "IsInfraDeployment": false,
+                    "ExternalPort": 443,
+                    "IsInternal": true,
+                    "ForHealthCheck": false,
+                    "HealthCheckUrl": "",
+                    "IsNative": true,
+                    "LbType": 0,
+                    "TgCount": 0,
+                    "CertificateArn": "arn:aws:acm:us-west-2:128329325849:certificate/39834e5e-0bc6-44b0-96fe-66e7dcd609e1"
+                }
+            ],
+            "OtherDockerConfig": "{\"Labels\":{\"co.elastic.logs/enabled\":\"false\"}}",
+            "OtherDockerHostConfig": "{\"NetworkMode\": \"host\", \"CapAdd\": [ \"NET_ADMIN\" ]}",
+            "DeviceIds": [],
+            "Cloud": 0,
+            "IsLBSyncedDeployment": false,
+            "IsDaemonset": false,
+            "IsReplicaCollocationAllowed": false
+        }
+    ],
+    "RDSInstances": [],
+    "ECacheInstances": [],
+    "NativeHosts": [
+        {
+            "FriendlyName": "diagnostics",
+            "ImageId": "ami-0cd7aeceb6d2423d0",
+            "Capacity": "t3a.large",
+            "IsMinion": true,
+            "Zone": 1,
+            "Base64UserData": "IyEvYmluL2Jhc2gKZWNobyAiTWFraW5nIGRhdGEgZGlyZWN0b3J5Igpta2RpciAtcCAvZGF0YS9l\r\ncwoKZWNobyAiR2l2aW5nIHBlcm1pc3Npb25zICIKY2htb2QgNzc3IC9kYXRhL2VzIAoKZWNobyAi\r\nMTI3LjAuMC4xIiAkKGhvc3RuYW1lKSA+PiAvZXRjL2hvc3RzCg==",
+            "AgentPlatform": 0,
+            "IsEbsOptimized": false,
+            "Cloud": 0,
+            "AllocatedPublicIp": false,
+            "MinionTags": [],
+            "EncryptDisk": false
+        }
+    ],
+    "AzureHosts": [],
+    "NativeHostCustomData": [
+        {
+            "ComponentId": "diagnostics",
+            "ComponentType": 2,
+            "Key": "AllocationTags",
+            "Value": "diagnostics"
+        },
+        {
+            "ComponentId": "diagnostics",
+            "ComponentType": 2,
+            "Key": "duplo-system-service",
+            "Value": "true"
+        }
+    ],
+    "CustomData": [],
+    "S3Buckets": [],
+    "SgRules": []
+}

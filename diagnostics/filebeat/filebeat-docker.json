@@ -1,0 +1,26 @@
+{
+    "Tags": [
+        {
+            "Key": "infra_svc_version",
+            "Value": "0.5"
+        }
+    ],
+    "Name": "filebeat",
+    "DockerImage": "duplocloud/filebeat:7.14.0-r4",
+    "NetworkId": "default",
+    "AgentPlatform": 0,
+    "Volumes": "\"/var/lib/docker/containers:/var/lib/docker/containers:ro\",\"/var/run/docker.sock:/var/run/docker.sock:ro\"",
+    "ExtraConfig": "{\n   \"strict.perms\" : false,\n   \"ELASTICSEARCH_HOSTS\" : \"https://system-svc-es-default.poc.duplocloud.net\" \n}",
+    "AllocationTags": "",
+    "ApplicationUrl": "",
+    "IsInfraDeployment": false,
+    "SecondaryTenant": "",
+    "LBConfigurations": [],
+    "OtherDockerConfig": "{\"User\":\"root\"}",
+    "OtherDockerHostConfig": "",
+    "DeviceIds": [],
+    "Cloud": 0,
+    "IsLBSyncedDeployment": false,
+    "IsDaemonset": true,
+    "IsReplicaCollocationAllowed": false
+}

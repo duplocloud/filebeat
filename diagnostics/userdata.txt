@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "Making data directory"
+mkdir -p /data/es
+
+echo "Giving permissions "
+chmod 777 /data/es 
+
+echo "127.0.0.1" $(hostname) >> /etc/hosts
