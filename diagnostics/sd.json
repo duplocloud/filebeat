@@ -30,7 +30,7 @@
                     "IsNative": true,
                     "LbType": 0,
                     "TgCount": 0,
-                    "CertificateArn": "arn:aws:acm:us-west-2:128329325849:certificate/39834e5e-0bc6-44b0-96fe-66e7dcd609e1"
+                    "CertificateArn": "<TO_BE_UPDATED>"
                 }
             ],
             "OtherDockerConfig": "{\"User\":\"root\", \"Labels\":{\"co.elastic.logs/enabled\":\"false\"}}",
@@ -69,7 +69,7 @@
                     "IsNative": true,
                     "LbType": 0,
                     "TgCount": 0,
-                    "CertificateArn": "arn:aws:acm:us-west-2:128329325849:certificate/39834e5e-0bc6-44b0-96fe-66e7dcd609e1"
+                    "CertificateArn": "<TO_BE_UPDATED>"
                 }
             ],
             "OtherDockerConfig": "{\"Labels\":{\"co.elastic.logs/enabled\":\"false\"}}",

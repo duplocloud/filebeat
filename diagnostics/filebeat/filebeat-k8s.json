@@ -16,11 +16,11 @@
     "IsInfraDeployment": false,
     "SecondaryTenant": "",
     "LBConfigurations": [],
-    "OtherDockerConfig": "{\"securityContext\":{\"allowPrivilegeEscalation\":false,\"runAsUser\":0},\"Env\":[{\"Name\":\"strict.perms\",\"Value\":false},{\"Name\":\"output.elasticsearch.hosts\",\"Value\":\"es-ganesh-test.poc.duplocloud.net:9200\"},{\"Name\":\"ELASTICSEARCH_HOSTS\",\"Value\":\"https://system-svc-es-default.poc.duplocloud.net:443\"}]}",
+    "OtherDockerConfig": "{\"securityContext\":{\"allowPrivilegeEscalation\":false,\"runAsUser\":0},\"PodAnnotations\":{\"co.elastic.logs/enabled\":\"false\"},\"Env\":[{\"Name\":\"strict.perms\",\"Value\":false},{\"Name\":\"ELASTICSEARCH_HOSTS\",\"Value\":\"https://system-svc-es-default.<TO_BE_UPDATED_BASE_DOMAIN>:443\"}]}",
     "OtherDockerHostConfig": "",
     "DeviceIds": [],
     "Cloud": 0,
     "IsLBSyncedDeployment": false,
     "IsDaemonset": true,
-    "IsReplicaCollocationAllowed": false,
+    "IsReplicaCollocationAllowed": false
 }
