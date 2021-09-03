@@ -44,7 +44,7 @@
         {
             "Tags": [],
             "Name": "system-svc-kibana",
-            "DockerImage": "duplocloud/kibana:7.14.0",
+            "DockerImage": "duplocloud/kibana:7.14.0-r4",
             "Replicas": 1,
             "NetworkId": "default",
             "AgentPlatform": 0,
