@@ -47,7 +47,7 @@ DuploCloud uses **`filebeat`** for pushing logs of all the running containers in
     12. Click on the <span style="color:blue">**Add**</span> button. 
     13. After few minutes, filebeat service will be created as Daemon Set which will run on all the hosts.
 
-2. Enable Reverse Proxy for the Kibana  
+2. Set Reverse Proxy for the Kibana  
 
    To make Kibana accessible to all the DuploCloud Authenticated user, reverse proxy settings have to be configured. Follow the below steps to configure reverse proxy.
 
@@ -59,6 +59,54 @@ DuploCloud uses **`filebeat`** for pushing logs of all the running containers in
         - Backend Host Url: `https://<kibana_serivce_dns>`
         - Forwarding Prefix: `/proxy/kibana`
     3.  Click on the <span style="color:blue">**Update**</span> button. 
+    4. To verify the logs getting pushed and availbale in Kibana, navigate to   
+
+        > `Diagnostics --> Logging `
+
+# Setting up the Auditor
+Auditor functionality will alow user to persist and later view all the update operations executed by the user in DuploCloud consol. 
+
+1. Create Elatesticsearch Index and Index Mappings
+
+    ```
+        export ES_ENDPOINT="https://es_endpoint"
+
+        curl -XPUT "http://${ES_ENDPOINT}/tenant/"
+        curl -XPUT "http://${ES_ENDPOINT}/auth/"
+        curl -XPUT "http://${ES_ENDPOINT}/tenant/_mapping" -H 'Content-Type: application/json' -d'
+        {
+        "properties": {
+            "timestamp": {
+            "type": "date",
+            "format": "M/d/y h:m:s a"
+            }
+        }
+        }'
+
+        curl -XPUT "http://${ES_ENDPOINT}/tenant/_mapping" -H 'Content-Type: application/json' -d'
+        {
+        "properties": {
+            "timestamp": {
+            "type": "date",
+            "format": "M/d/y h:m:s a"
+            }
+        }
+        }'
+        ```
+2. To enable Audit loggin for the infra, navigate to
+ `Administrator --> Plans`
+3. Search for the plan for which audtor has to be enabled and click on plan name.
+4. Navigate to **Config** tab and click on <span style="color:blue">**Add**</span> button. 
+5. Set the below values
+    - Proxy Path: `/kibana`
+    - Backend Host Url: `https://<kibana_serivce_dns>`
+    - Forwarding Prefix: `/proxy/kibana`
+6. Click on <span style="color:blue">**Submit**</span> button
+        
+
+
+        
+
 
 
         
