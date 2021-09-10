@@ -4,7 +4,7 @@ DuploCloud uses Elasticsearch for storing and Kibana for visualizing logs. Follo
 1. Get the latest version of the Diagnostics Service Description `JSON` from the DuploCloud Team. 
 2. Replace all the strings `<TO_BE_UPDATED>` with the appropriate AWS SCM certificate ARN.
 3. If you want to deploy this Elasticsearch and Kibana in other than default tenant, set `Tenant` attribute as bellow in the Service Description JSON.  
-    ``` json
+    ```js
     {
             "Name"      : "DiagnosticsV3",
             "Tenant"    : "<Name_of tenant>"  
@@ -68,7 +68,7 @@ Auditor functionality will allow the user to persist and later view all the upda
 
 1. Create Elatesticsearch Index and Index Mappings
 
-    ```
+    ```console
         export ES_ENDPOINT="https://es_endpoint"
 
         curl -XPUT "http://${ES_ENDPOINT}/tenant/"
