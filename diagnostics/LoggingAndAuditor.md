@@ -64,7 +64,7 @@ DuploCloud uses **`filebeat`** for pushing logs of all the running containers in
         > `Diagnostics --> Logging `
 
 # Setting up the Auditor
-Auditor functionality will alow user to persist and later view all the update operations executed by the user in DuploCloud consol. 
+Auditor functionality will allow the user to persist and later view all the update operations executed by the user in the DuploCloud console. Follow below steps to enable Auditor.
 
 1. Create Elatesticsearch Index and Index Mappings
 
@@ -103,7 +103,6 @@ Auditor functionality will alow user to persist and later view all the update op
     - Forwarding Prefix: `/proxy/kibana`
 6. Click on <span style="color:blue">**Submit**</span> button
         
-
 
         
 
