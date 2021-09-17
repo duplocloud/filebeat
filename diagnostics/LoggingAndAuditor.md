@@ -69,30 +69,30 @@ Auditor functionality will allow user to persist and later view all the update o
 1. Create Elatesticsearch Index and Index Mappings
 
     ```console
-export ES_ENDPOINT="https://es_endpoint"
+        export ES_ENDPOINT="https://es_endpoint"
 
-curl -XPUT "${ES_ENDPOINT}/tenant/"
-curl -XPUT "${ES_ENDPOINT}/auth/"
-curl -XPUT "${ES_ENDPOINT}/auth/_mapping" -H 'Content-Type: application/json' -d'
-{
-"properties": {
-    "timestamp": {
-    "type": "date",
-    "format": "M/d/y h:m:s a"
-    }
-}
-}'
+        curl -XPUT "${ES_ENDPOINT}/tenant/"
+        curl -XPUT "${ES_ENDPOINT}/auth/"
+        curl -XPUT "${ES_ENDPOINT}/auth/_mapping" -H 'Content-Type: application/json' -d'
+        {
+        "properties": {
+            "timestamp": {
+            "type": "date",
+            "format": "M/d/y h:m:s a"
+            }
+        }
+        }'
 
-curl -XPUT "${ES_ENDPOINT}/tenant/_mapping" -H 'Content-Type: application/json' -d'
-{
-"properties": {
-    "timestamp": {
-    "type": "date",
-    "format": "M/d/y h:m:s a"
-    }
-}
-}'
-        ```
+        curl -XPUT "${ES_ENDPOINT}/tenant/_mapping" -H 'Content-Type: application/json' -d'
+        {
+        "properties": {
+            "timestamp": {
+            "type": "date",
+            "format": "M/d/y h:m:s a"
+            }
+        }
+        }'
+    ```
 2. To enable Audit logs for the infra, navigate to
  `Administrator --> Plans`
 3. Search for the plan for which Audit logs has to be enabled and click on plan name.
