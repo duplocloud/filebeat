@@ -34,6 +34,26 @@ DuploCloud uses Prometheus for storing time-series data for node, container, and
 6. Click on <span style="color:blue">**Update**</span> button.
 7. After few minutes, three services will be created in the `default` tenant with names as **system-svc-Prometheus**, **system-svc-grafana**, and **system-svc-yace**.
 8. Wait for services to be <span style="color:green">Running</span> and  <span style="color:green">Healthy</span>.
+9. Add following inline policy **duploservices-default** role 
+    ```js
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "tag:GetResources",
+            "cloudwatch:ListTagsForResource",
+            "cloudwatch:GetMetricData",
+            "cloudwatch:ListMetrics",
+            "cloudwatch:GetMetricStatistics"
+          ],
+          "Resource": "*",
+          "Condition": {}
+        }
+      ]
+    }
+    ```
 
 ## Add PlatformServices
 This step is required so that users can enable Logging, monitoring, and metrics for different tenants
