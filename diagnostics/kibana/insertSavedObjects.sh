@@ -1,8 +1,9 @@
 set -eux
 BASE_URL="http://127.0.0.1:5601${SERVER_BASEPATH}"
+sleep 30
 wait-for-url() {
     echo "InsertSavedObjects: Waiting for the service to be up"
-    timeout -s TERM 45 bash -c \
+    timeout -s TERM 120 bash -c \
     'while [[ "$(curl -s -o /dev/null -L -w ''%{http_code}'' ${0})" != "200" ]];\
     do echo "InsertSavedObjects: Waiting for ${0}" && sleep 2;\
     done' ${1}
