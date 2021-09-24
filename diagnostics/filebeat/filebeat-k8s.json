@@ -1,0 +1,26 @@
+{
+    "Tags": [
+        {
+            "Key": "infra_svc_version",
+            "Value": "0.5"
+        }
+    ],
+    "Name": "filebeat-k8s",
+    "DockerImage": "duplocloud/filebeat:7.14.0-r4",
+    "NetworkId": "default",
+    "AgentPlatform": 7,
+    "Volumes": "[\n    {\n        \"Name\": \"containers\",\n        \"Path\": \"/var/lib/docker/containers\",\n        \"ReadOnly\": true,\n        \"Spec\": {\n            \"HostPath\": {\n                \"Path\": \"/var/lib/docker/containers\"\n            }\n        }\n    },\n    {\n        \"Name\": \"sock\",\n        \"Path\": \"/var/run/docker.sock\",\n        \"Spec\": {\n            \"HostPath\": {\n                \"Path\": \"/var/run/docker.sock\"\n            }\n        }\n    }\n]",
+    "ExtraConfig": "",
+    "AllocationTags": "",
+    "ApplicationUrl": "",
+    "IsInfraDeployment": false,
+    "SecondaryTenant": "",
+    "LBConfigurations": [],
+    "OtherDockerConfig": "{\"securityContext\":{\"allowPrivilegeEscalation\":false,\"runAsUser\":0},\"PodAnnotations\":{\"co.elastic.logs/enabled\":\"false\"},\"Env\":[{\"Name\":\"strict.perms\",\"Value\":false},{\"Name\":\"ELASTICSEARCH_HOSTS\",\"Value\":\"https://system-svc-es-default.<TO_BE_UPDATED_BASE_DOMAIN>:443\"}]}",
+    "OtherDockerHostConfig": "",
+    "DeviceIds": [],
+    "Cloud": 0,
+    "IsLBSyncedDeployment": false,
+    "IsDaemonset": true,
+    "IsReplicaCollocationAllowed": false
+}
