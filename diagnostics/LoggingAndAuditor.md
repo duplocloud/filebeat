@@ -1,4 +1,4 @@
-# Setting up the Centralized Logging
+# Setting up the Diagnostics
 ## Install Elasticsearch and Kibana
 DuploCloud uses Elasticsearch for storing and Kibana for visualizing logs. Following are the steps to install Elasticsearch and Kibana using the DuploCloud **Service Description** feature.
 1. Download the latest version of the Diagnostics Service Description `JSON` from [Here](sd.json)
