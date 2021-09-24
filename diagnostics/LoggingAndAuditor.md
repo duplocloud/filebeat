@@ -1,7 +1,7 @@
 # Setting up the Centralized Logging
 ## Install Elasticsearch and Kibana
 DuploCloud uses Elasticsearch for storing and Kibana for visualizing logs. Following are the steps to install Elasticsearch and Kibana using the DuploCloud **Service Description** feature.
-1. Get the latest version of the Diagnostics Service Description `JSON` from the DuploCloud Team. 
+1. Download the latest version of the Diagnostics Service Description `JSON` from [Here](sd.json)
 2. Replace all the strings `<TO_BE_UPDATED>` with the appropriate AWS SCM certificate ARN.
 3. If you want to deploy this Elasticsearch and Kibana in other than default tenant, set `Tenant` attribute as bellow in the Service Description JSON.  
     ```js
@@ -18,6 +18,64 @@ DuploCloud uses Elasticsearch for storing and Kibana for visualizing logs. Follo
 6. Click on <span style="color:blue">**Update**</span> button.
 7. After few minutes, two services will be created in the selected tenant with names **system-svc-es** and **system-svc-kibana**.
 8. Wait for services to be <span style="color:green">Running</span> and  <span style="color:green">Healthy</span>.
+
+## Install Grafana, Prometheous and YACE
+DuploCloud uses prometheous for straring timeseries data for node, container and cloud watch metrics. YACE is used to seeding AWS cloudwatch metrics to the Prometheous. Grafana is used for visualizing these metrics. 
+1. Download the latest version of the monitoring Service Description `JSON` from [Here](https://github.com/duplocloud/grafana-dashboard-docker/blob/master/settings/service_descriptions/monitoring-svd.json)
+2. Replace all the strings `<TO_BE_UPDATED>` with the appropriate value as below.
+    1. GRAFANA_DOMAIN --> CUSTOMER_ENV_NAME.duplocloud.net
+    2. ADMIN_PASSWORD --> Generate new random password
+    3. CertificateArn --> This should customer DNS suffix domains certificate we created and added in the plan
+
+4. Login to DuploCloud console and navigate to  
+     > `Administrator --> System Settings --> Service Descriptions(Tab)`
+4. Click on the <span style="color:blue">**Add**</span> button.
+5. Paste the above-modified JSON in the input field as shown in the below image.
+6. Click on <span style="color:blue">**Update**</span> button.
+7. After few minutes, three services will be created in the `default` tenant with names as **system-svc-prometheous**, **system-svc-grafana** and **system-svc-yace**.
+8. Wait for services to be <span style="color:green">Running</span> and  <span style="color:green">Healthy</span>.
+
+## Add PlatformServices
+This step is required so that user can enabled Loggin, monitoring and metrics for different tenants
+
+1. Download the latest version of platform services `JSON` from [Here](https://github.com/duplocloud/grafana-dashboard-docker/blob/master/settings/PlatformServices.json)
+2. Replace all the strings `<TO_BE_UPDATED>` with the appropriate value as below.
+    1. DUPLO_AUTH_URL --> https://CUSTOMER_ENV_NAME.duplocloud.net
+    
+
+4. Login to DuploCloud console and navigate to  
+     > `Administrator --> System Settings --> Platform Services(Tab)`
+4. Click on the <span style="color:blue">**Edit Platform Services**</span> button.
+5. Paste the above-modified JSON in the input field as shown in the below image.
+6. Click on <span style="color:blue">**Update**</span> button.
+
+
+## Enable monitoring
+1. Add Iframe Configs
+    1. Download the latest version of Ifraem configs `JSON` from [Here](https://github.com/duplocloud/grafana-dashboard-docker/blob/master/settings/IframeConfigs.json)
+    2. Login to DuploCloud console and navigate to  
+     > `Administrator --> System Settings --> Iframe Configs(Tab)`
+    3. Click on the <span style="color:blue">**Edit Iframe Configs**</span> button.
+    5. Paste the content of downloaded JSON in the input field as shown in the below image.
+    6. Click on <span style="color:blue">**Update**</span> button.
+2. Set Reverse Proxy for the grafana  
+    1. Login to DuploCloud portal and navigate to  
+        > `Administrator --> System Settings --> Reverse Proxy(Tab)`
+    2. Click on the Add button and set the values as bellow
+        - Proxy Path: `/grafanaproxy`
+        - Backend Host Url: `https://system-svc-grafana-default.<dns_name>`
+    3.  Click on the <span style="color:blue">**Update**</span> button. 
+    4. Verify if you can visit the `https://<duplo_portal>/proxy/grafanaproxy`
+3. Enable monitoring for tenants
+    1. Navigate to `Administrator --> Tenants`
+    2. Search for the tenant for which you want to enable monitoring and click on the **Tenant Name**
+    3. Go to **Settings** tab and click on the <span style="color:blue">**Add**</span> button.
+    4. Select either `Enable Node Monitoring` or `Enable k8s Node Monitoring` as container platform enabled for the Infa.
+    5. Click on the <span style="color:blue">**Enable**</span> switch button. 
+    6. Click on the <span style="color:blue">**Add**</span> button. 
+    7. After few minutes, `node-exporter` service will be created which will run on all the hosts.
+    8. Repeat aboe steps to enable `Enable Docker Monitoring` or `Enable k8s docker monitoring` as container platform enabled for the Infra.
+
 
 ## Enable Logging
 DuploCloud uses **`filebeat`** for pushing logs generated by all the running containers in the tenant to the Elasticsearch. To enable logging for the Tenant, follow the steps as below.
