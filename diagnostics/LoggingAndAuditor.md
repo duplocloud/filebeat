@@ -66,7 +66,25 @@ This step is required so that users can enable Logging, monitoring, and metrics 
         - Backend Host Url: `https://system-svc-grafana-default.<base_domain_name>`
     3.  Click on the <span style="color:blue">**Update**</span> button. 
     4. Verify if you can visit the `https://<duplo_portal>/proxy/grafanaproxy`
-3. Enable monitoring for tenants
+3. Enable Security Rules
+    Security rules needs to be enabled so that Prometheus can reach to nodes running in the tenant to collect the host and container metrics
+    1. Login to DuploCloud console and navigate to `Administrator --> Infrastructure`
+    2. Select the infrastructure where you want to enable monetoring and go to `Security Group Rules` tab
+    3. Click on <span style="color:blue">**Add**</span> button.  
+    4. Set the values as below  
+        1. Source Type: Tenant
+        2. Tenant: 'default'
+        3. Protocol: http
+        4. Port Range: 30880-30880
+        5. Description: Allow default tenant to talk with cadvisor
+    6. Click on <span style="color:blue">**Add**</span> button and wait for successfull message
+    7. Repeat above steps for Node collecter with values as below.
+        1. Source Type: Tenant
+        2. Tenant: 'default'
+        3. Protocol: http
+        4. Port Range: 9100-9100
+        5. Description: Allow default tenant to talk with node-collector
+5. Enable monitoring for tenants
     1. Navigate to `Administrator --> Tenants`
     2. Search for the tenant for which you want to enable monitoring and click on the **Tenant Name**
     3. Go to **Settings** tab and click on the <span style="color:blue">**Add**</span> button.
