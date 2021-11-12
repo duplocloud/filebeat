@@ -10,7 +10,7 @@ monitoring.ui.container.elasticsearch.enabled: true
 ## X-Pack security credentials
 #
 elasticsearch.username: elastic
-elasticsearch.password: changeme
+elasticsearch.password: "#ELASTICSEARCH_PASSWORD#"
 xpack.encryptedSavedObjects.encryptionKey: Zw3y6B8DaGdJfMjQmSpVsXu2x4z6C9EbGeK
 
 xpack.security.authc.providers:
@@ -18,7 +18,7 @@ xpack.security.authc.providers:
     order: 0
     credentials:
       username: "elastic"
-      password: "changeme"
+      password: "#ELASTICSEARCH_PASSWORD#"
 
 ##
 ## TLS configuration
