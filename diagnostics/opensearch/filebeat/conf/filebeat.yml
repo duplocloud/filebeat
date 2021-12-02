@@ -1,0 +1,14 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+processors:
+- add_cloud_metadata: ~
+- add_fields:
+    target: tenant
+    fields:
+      name: '${TENANT_NAME:unknown}'
+      id: '${TENANT_ID:unknown}'
+      roleName: ${ROLE_NAME:unknown}
+output.elasticsearch:
+  hosts: '${ELASTIC_HOST}'
