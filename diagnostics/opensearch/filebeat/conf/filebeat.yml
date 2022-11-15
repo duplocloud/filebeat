@@ -1,7 +1,16 @@
 filebeat.autodiscover:
   providers:
-    - type: docker
-      hints.enabled: true
+    - type: kubernetes
+      templates:
+        - condition:
+            not:
+              equals:
+                kubernetes.namespace: kube-system
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/${data.kubernetes.container.id}/*.log
+              exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
 processors:
 - add_cloud_metadata: ~
 - add_fields:
