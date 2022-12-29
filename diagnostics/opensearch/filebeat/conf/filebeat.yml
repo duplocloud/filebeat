@@ -11,4 +11,4 @@ processors:
       id: '${TENANT_ID:unknown}'
       roleName: ${ROLE_NAME:unknown}
 output.elasticsearch:
-  hosts: '${ELASTIC_HOST}'
+  hosts: ${ELASTIC_HOST}
