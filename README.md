@@ -1,6 +1,15 @@
-# filebeat
-Filebeat that takes ES as a env variable. Will ship any logs that are in the container's /logs folder to ES. Mount the desired folder from the host, from where logs are to be collected, to container folder /logs . See example usage below
-
-Example usage:
-docker run -d --env HOSTS="'10.102.1.5:9200'" -v /var/log:/logs duplocloud/anyservice:filebeat_v2
-
+# Filebeat
+We use hints based autodiscover of filebeat to automatically discover the servicename and other labels. 
+With recent change of filebaet config. We now support Tenant level and Service level logs  
+Native Linux Docker image: **duplocloud/filebeat-oss:7.11.1-alpine-3.13.2-r2-tenantNServiceLevelLogs**  
+For **Tenant level logs**: Add the env varibale `"TENANT_LEVEL_INDEX": "yes"`  
+For the **Service level logs**: add the lables to the service.  
+```
+{
+	"Labels": {
+		"co.elastic.logs/enabled": "true",
+		"co.elastic.logs/processors.1.add_fields.target": "",
+		"co.elastic.logs/processors.1.add_fields.fields.serviceLevelIndex": "yes"
+	}
+}
+```
