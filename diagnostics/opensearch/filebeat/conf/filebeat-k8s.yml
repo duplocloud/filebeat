@@ -1,0 +1,42 @@
+filebeat.autodiscover:
+  providers:
+    - type: kubernetes
+      hints.enabled: true
+processors:
+#Drop events from other namespaces except Duplo tenants.
+- drop_event:
+    when.not.regexp:
+      kubernetes.namespace: "^duploservices-*"
+- add_cloud_metadata: ~
+- add_fields:
+    target: tenant
+    fields:
+      name: '${TENANT_NAME:unknown}'
+      id: '${TENANT_ID:unknown}'
+      roleName: ${ROLE_NAME:unknown}
+#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME      
+- replace:
+    fields:
+      - field: "kubernetes.labels.tenantname"
+        pattern: "duploservices-"
+        replacement: ""
+    ignore_missing: true
+    fail_on_error: false
+#Add fields to support tenant level index    
+- add_fields:
+    target: ''
+    fields:
+      tenantLevelIndex: '${TENANT_LEVEL_INDEX:unknown}'
+setup.template.name: "filebeat-%{[agent.version]}"
+setup.template.pattern: "filebeat-%{[agent.version]}-*"    
+output.elasticsearch:
+  hosts: '${ELASTIC_HOST}'
+  indices:
+    - index: "filebeat-%{[agent.version]}-%{[kubernetes.labels.tenantname]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
+      when.equals:
+        serviceLevelIndex: "yes"
+    - index: "filebeat-%{[agent.version]}-%{[kubernetes.labels.tenantname]}-%{+yyyy.MM.dd}"
+      when.equals:
+        tenantLevelIndex: "yes"
+  bulk_max_size: '${BULK_MAX_SIZE:50}'
+  worker: '${WORKER_COUNT:1}'

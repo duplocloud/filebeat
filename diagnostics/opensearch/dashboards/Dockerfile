@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch-dashboards:1.2.0
+FROM opensearchproject/opensearch-dashboards:2.4.0
 COPY ./entrypoint.sh /usr/share/opensearch-dashboards
 COPY ./insertSavedObjects.sh /usr/share/opensearch-dashboards
 USER root
