@@ -10,5 +10,10 @@ processors:
       name: '${TENANT_NAME:unknown}'
       id: '${TENANT_ID:unknown}'
       roleName: ${ROLE_NAME:unknown}
+
 output.elasticsearch:
-  hosts: '${ELASTIC_HOST}'
+  hosts: '${ELASTICSEARCH_HOSTS:localhost:9200}'
+  username: '${ELASTICSEARCH_USERNAME:}'
+  password: '${ELASTICSEARCH_PASSWORD:}'
+setup.kibana:
+  host: "localhost:9200"

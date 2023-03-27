@@ -1,4 +1,4 @@
-FROM duplocloud/elasticsearch:7.14.0
+FROM docker.elastic.co/elasticsearch/elasticsearch:8.5.3
 COPY ./es/config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
 COPY ./tls/elasticsearch/elasticsearch.p12 /usr/share/elasticsearch/config/elasticsearch.p12
 COPY ./tls/elasticsearch/http.p12 /usr/share/elasticsearch/config/http.p12

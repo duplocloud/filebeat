@@ -8,17 +8,7 @@ elasticsearch.hosts: [ "https://elasticsearch:9200" ]
 monitoring.ui.container.elasticsearch.enabled: true
 
 ## X-Pack security credentials
-#
-elasticsearch.username: elastic
-elasticsearch.password: "#ELASTICSEARCH_PASSWORD#"
 xpack.encryptedSavedObjects.encryptionKey: Zw3y6B8DaGdJfMjQmSpVsXu2x4z6C9EbGeK
-
-xpack.security.authc.providers:
-  anonymous.anonymous1:
-    order: 0
-    credentials:
-      username: "elastic"
-      password: "#ELASTICSEARCH_PASSWORD#"
 
 ##
 ## TLS configuration

@@ -1,4 +1,4 @@
-FROM duplocloud/kibana:7.14.0
+FROM docker.elastic.co/kibana/kibana:8.5.3
 COPY ./kibana/entrypoint.sh /usr/share/kibana
 COPY ./kibana/insertSavedObjects.sh /usr/share/kibana
 COPY ./kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml
