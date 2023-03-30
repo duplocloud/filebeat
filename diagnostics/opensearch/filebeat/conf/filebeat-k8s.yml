@@ -17,8 +17,8 @@ processors:
 #Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME            
 - copy_fields:
     fields:
-      - from: message
-        to: tenant.name
+      from: stream
+      to: tenant.name
     fail_on_error: false
     ignore_missing: true    
 #strip out duploservice- and actual TENANT_NAME 
