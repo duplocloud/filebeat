@@ -1,0 +1,20 @@
+name: Filebeat image build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Native Docker image
+      run: docker buildx build --push --platform linux/arm64,linux/amd64 --file diagnostics/opensearch/filebeat/Dockerfile --tag duplocloud/filebeat-oss:7.11.1-$(date +%s) .
+    - name: Build the K8 Docker image
+      run: docker buildx build --push --platform linux/arm64,linux/amd64 --file diagnostics/opensearch/filebeat/Dockerfile-k8s --tag duplocloud/filebeat-oss:7.11.1-$(date +%s)-k8 .
