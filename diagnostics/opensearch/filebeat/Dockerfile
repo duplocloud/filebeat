@@ -1,4 +1,4 @@
-FROM duplocloud/filebeat-oss:7.11.1-r5
+FROM duplocloud/filebeat-oss:7.11.1-r7
 COPY ./diagnostics/opensearch/filebeat/conf/filebeat.yml /usr/share/filebeat/filebeat.yml
 COPY ./diagnostics/opensearch/filebeat/filebeat-entrypoint.sh /filebeat-entrypoint.sh
 USER root
