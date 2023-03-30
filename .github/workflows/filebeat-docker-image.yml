@@ -28,7 +28,7 @@ jobs:
           push: true
           platforms: linux/arm64,linux/amd64
           file: diagnostics/opensearch/filebeat/Dockerfile
-          tags: duplocloud/filebeat-oss:7.11.1-${GIT_COMMIT}
+          tags: duplocloud/filebeat-oss:7.11.1-r9
       - name: Build and push k8s docker image
         uses: docker/build-push-action@v4
         with:
@@ -36,4 +36,4 @@ jobs:
           push: true
           platforms: linux/arm64,linux/amd64
           file: diagnostics/opensearch/filebeat/Dockerfile-k8s
-          tags: duplocloud/filebeat-oss:7.11.1-${GIT_COMMIT}-k8        
+          tags: duplocloud/filebeat-oss:7.11.1-r9-k8        
