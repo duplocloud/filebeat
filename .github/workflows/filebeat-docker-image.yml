@@ -37,5 +37,5 @@ jobs:
           context: .
           push: true
           platforms: linux/arm64,linux/amd64
-          file: diagnostics/opensearch/filebeat/Dockerfile-k8s
+          file: Dockerfile-k8s
           tags: duplocloud/filebeat-oss:7.11.1-r9-k8        
