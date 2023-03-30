@@ -17,16 +17,16 @@ processors:
 #Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME            
 - copy_fields:
     when.equals:
-      tenant.TENANT_NAME: "unknown"
+      tenant.name: "unknown"
     fields:
       - from: kubernetes.labels.tenantname
-        to: tenant.TENANT_NAME
+        to: tenant.name
 #strip out duploservice- and actual TENANT_NAME 
 - replace:
     when.regexp:
-      tenant.TENANT_NAME: "^duploservices-*"
+      tenant.name: "^duploservices-*"
     fields:
-      - field: "tenant.TENANT_NAME"
+      - field: "tenant.name"
         pattern: "duploservices-"
         replacement: ""
     ignore_missing: true
@@ -41,10 +41,10 @@ setup.template.pattern: "filebeat-%{[agent.version]}-*"
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   indices:
-    - index: "filebeat-%{[agent.version]}-%{[tenant.TENANT_NAME]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-%{[tenant.TENANT_NAME]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
   bulk_max_size: '${BULK_MAX_SIZE:50}'
