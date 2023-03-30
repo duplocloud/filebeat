@@ -8,12 +8,6 @@ processors:
     when.not.regexp:
       kubernetes.namespace: "^duploservices-*"
 - add_cloud_metadata: ~
-- add_fields:
-    target: tenant
-    fields:
-      name: '${TENANT_NAME:unknown}'
-      id: '${TENANT_ID:unknown}'
-      roleName: ${ROLE_NAME:unknown}
 #Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME            
 - copy_fields:
     fields:
