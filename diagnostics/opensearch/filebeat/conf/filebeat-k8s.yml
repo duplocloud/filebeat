@@ -14,10 +14,19 @@ processors:
       name: '${TENANT_NAME:unknown}'
       id: '${TENANT_ID:unknown}'
       roleName: ${ROLE_NAME:unknown}
-#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME      
-- replace:
+#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME            
+- copy_fields:
+    when.equals:
+      tenant.TENANT_NAME: "unknown"
     fields:
-      - field: "kubernetes.labels.tenantname"
+      - from: kubernetes.labels.tenantname
+        to: tenant.TENANT_NAME
+#strip out duploservice- and actual TENANT_NAME 
+- replace:
+    when.regexp:
+      tenant.TENANT_NAME: "^duploservices-*"
+    fields:
+      - field: "tenant.TENANT_NAME"
         pattern: "duploservices-"
         replacement: ""
     ignore_missing: true
@@ -32,10 +41,10 @@ setup.template.pattern: "filebeat-%{[agent.version]}-*"
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   indices:
-    - index: "filebeat-%{[agent.version]}-%{[kubernetes.labels.tenantname]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.TENANT_NAME]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-%{[kubernetes.labels.tenantname]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.TENANT_NAME]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
   bulk_max_size: '${BULK_MAX_SIZE:50}'
