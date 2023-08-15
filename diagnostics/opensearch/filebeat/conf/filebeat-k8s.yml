@@ -2,6 +2,10 @@ filebeat.autodiscover:
   providers:
     - type: kubernetes
       hints.enabled: true
+      hints.default_config:
+        type: container
+        paths:
+          - /var/log/containers/*-${data.container.id}.log  # CRI path
 processors:
 #Drop events from other namespaces except Duplo tenants.
 - drop_event:
