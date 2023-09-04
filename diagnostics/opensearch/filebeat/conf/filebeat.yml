@@ -6,7 +6,7 @@ filebeat.autodiscover:
         type: container
         paths:
           - /var/lib/docker/containers/${data.container.id}/*.log  # CRI path
-        ignore_older: 1d  
+        ignore_older: 24h  
 processors:
 - add_cloud_metadata: ~
 - add_fields:
