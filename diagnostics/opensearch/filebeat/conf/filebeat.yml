@@ -5,7 +5,7 @@ filebeat.autodiscover:
       hints.default_config:
         type: container
         paths:
-          - /var/lib/docker/containers/${data.docker.container.id}/*.log  # CRI path
+          - /var/lib/docker/containers/${data.container.id}/*.log  # CRI path
         ignore_older: 1d  
 processors:
 - add_cloud_metadata: ~
