@@ -14,6 +14,10 @@ processors:
     target: ''
     fields:
       tenantLevelIndex: '${TENANT_LEVEL_INDEX:unknown}'
+- add_fields:
+    target: ''
+    fields:
+      datastream: '${ALIAS:unknown}'
 - drop_fields:
     fields: docker.container.labels
     ignore_missing: true
@@ -22,6 +26,9 @@ setup.template.pattern: "filebeat-%{[agent.version]}-*"
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   indices:
+    - index: "%{[datastream]}"
+      when.not.equals:
+        datastream: "unknown"
     - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
