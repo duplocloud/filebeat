@@ -1,5 +1,5 @@
 FROM duplocloud/filebeat-oss:7.11.1-r7-k8s
-RUN sudo apk update && sudo apk upgrade
+RUN sudo apk update && sudo apk upgrade --no-cache
 COPY ./diagnostics/opensearch/filebeat/conf/filebeat-k8s.yml /usr/share/filebeat/filebeat.yml
 COPY ./diagnostics/opensearch/filebeat/filebeat-entrypoint.sh /filebeat-entrypoint.sh
 USER root
