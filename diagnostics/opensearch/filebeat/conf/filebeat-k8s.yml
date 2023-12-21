@@ -8,17 +8,21 @@ filebeat.autodiscover:
           - /var/log/containers/*-${data.container.id}.log  # CRI path
         ignore_older: 24h
 processors:
+#Drop events from other namespaces except Duplo tenants.
+- drop_event:
+    when.not.regexp:
+      kubernetes.namespace: "^duploservices-*"
 - add_cloud_metadata: ~
-#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME            
+#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME
 - copy_fields:
     fields:
       - from: "kubernetes.labels.tenantname"
         to: "tenant.name"
       - from: "kubernetes.labels.tenantid"
-        to: "tenant.id"  
+        to: "tenant.id"
     fail_on_error: false
-    ignore_missing: true    
-#strip out duploservice- and actual TENANT_NAME 
+    ignore_missing: true
+#strip out duploservice- and actual TENANT_NAME
 - replace:
     fields:
       - field: "tenant.name"
@@ -26,7 +30,7 @@ processors:
         replacement: ""
     ignore_missing: true
     fail_on_error: false
-#Add fields to support tenant level index    
+#Add fields to support tenant level index
 - add_fields:
     target: ''
     fields:
@@ -36,7 +40,8 @@ processors:
     fields:
       datastream: '${ALIAS:unknown}'         
 setup.template.name: "filebeat-%{[agent.version]}"
-setup.template.pattern: "filebeat-%{[agent.version]}-*"    
+setup.template.pattern: "filebeat-%{[agent.version]}-*"
+setup.template.enabled: ${FILEBEAT_SETUP_TEMPLATE_ENABLED:true}
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   indices:
