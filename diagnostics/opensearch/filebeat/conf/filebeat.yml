@@ -6,7 +6,7 @@ filebeat.autodiscover:
         type: container
         paths:
           - /var/lib/docker/containers/${data.container.id}/*.log  # CRI path
-        ignore_older: 24h  
+        ignore_older: 24h
 processors:
 - add_cloud_metadata: ~
 - add_fields:
@@ -27,7 +27,8 @@ processors:
     fields: docker.container.labels
     ignore_missing: true
 setup.template.name: "filebeat-%{[agent.version]}"
-setup.template.pattern: "filebeat-%{[agent.version]}-*"    
+setup.template.pattern: "filebeat-%{[agent.version]}-*"
+setup.template.enabled: ${FILEBEAT_SETUP_TEMPLATE_ENABLED:true}
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   indices:
