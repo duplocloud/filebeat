@@ -8,6 +8,10 @@ filebeat.autodiscover:
           - /var/log/containers/*-${data.container.id}.log  # CRI path
         ignore_older: 24h
 processors:
+#Drop events from other namespaces except Duplo tenants.
+- drop_event:
+    when.not.regexp:
+      kubernetes.namespace: "^duploservices-*"
 - add_cloud_metadata: ~
 #Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME
 - copy_fields:
