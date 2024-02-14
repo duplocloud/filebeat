@@ -1,10 +1,10 @@
-name: Filebeat image build
+name: Custom filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "filebeat-custom" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "filebeat-custom" ]
 
 defaults:
   run:
@@ -24,19 +24,27 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push native docker image
+      # - name: Build and push native docker image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: .
+      #     push: true
+      #     platforms: linux/arm64,linux/amd64
+      #     file: diagnostics/opensearch/filebeat/Dockerfile
+      #     tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}
+      # - name: Build and push k8s docker image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: .
+      #     push: true
+      #     platforms: linux/arm64,linux/amd64
+      #     file: diagnostics/opensearch/filebeat/Dockerfile-k8s
+      #     tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}-k8s  
+      - name: Build and push custom docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           platforms: linux/arm64,linux/amd64
-          file: diagnostics/opensearch/filebeat/Dockerfile
-          tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}
-      - name: Build and push k8s docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          platforms: linux/arm64,linux/amd64
-          file: diagnostics/opensearch/filebeat/Dockerfile-k8s
-          tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}-k8s        
+          file: diagnostics/opensearch/filebeat/Dockerfile-custom
+          tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}-custom      
