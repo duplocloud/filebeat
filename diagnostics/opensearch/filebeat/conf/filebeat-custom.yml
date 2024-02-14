@@ -1,7 +1,7 @@
 filebeat.inputs:
   - type: kafka
     hosts: ['${KAFKA_HOST}']
-    topics: ["state", "healthcheck"]
+    topics: ["state", "connection", "device_event_queue"]
     group_id: '${KAFKA_GROUP_ID}'
     auto_offset_reset: "earliest"
 processors:
