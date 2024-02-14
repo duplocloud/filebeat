@@ -2,6 +2,7 @@ filebeat.inputs:
   - type: kafka
     hosts: ['${KAFKA_HOST}']
     topics: ["state", "healthcheck"]
+    group_id: '${KAFKA_GROUP_ID}'
     auto_offset_reset: "earliest"
 processors:
 - add_cloud_metadata: ~
