@@ -6,6 +6,7 @@ filebeat.autodiscover:
         type: container
         paths:
           - /var/log/containers/*-${data.container.id}.log  # CRI path
+          - /var/log/meerai-storage/*/*.log  # /var/www/html/storage/(app|logs)/*.log
         ignore_older: 24h
 processors:
 #Drop events from other namespaces except Duplo tenants.
