@@ -5,24 +5,12 @@ filebeat.modules:
       var.paths: ["c:/hh2webapp_logs_mount/*.log"]
 processors:
 - add_cloud_metadata: ~
-#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME
-- copy_fields:
+- add_fields:
+    target: tenant
     fields:
-      - from: "kubernetes.labels.tenantname"
-        to: "tenant.name"
-      - from: "kubernetes.labels.tenantid"
-        to: "tenant.id"
-    fail_on_error: false
-    ignore_missing: true
-#strip out duploservice- and actual TENANT_NAME
-- replace:
-    fields:
-      - field: "tenant.name"
-        pattern: "duploservices-"
-        replacement: ""
-    ignore_missing: true
-    fail_on_error: false
-#Add fields to support tenant level index
+      name: '${TENANT_NAME:unknown}'
+      id: '${TENANT_ID:unknown}'
+      roleName: ${ROLE_NAME:unknown}
 - add_fields:
     target: ''
     fields:
@@ -30,7 +18,10 @@ processors:
 - add_fields:
     target: ''
     fields:
-      datastream: '${ALIAS:unknown}'         
+      datastream: '${ALIAS:unknown}'
+- drop_fields:
+    fields: docker.container.labels
+    ignore_missing: true
 setup.template.name: "filebeat-%{[agent.version]}"
 setup.template.pattern: "filebeat-%{[agent.version]}-*"
 setup.template.enabled: ${FILEBEAT_SETUP_TEMPLATE_ENABLED:true}
@@ -39,8 +30,8 @@ output.elasticsearch:
   indices:
     - index: "%{[datastream]}"
       when.not.equals:
-        datastream: "unknown"  
-    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
+        datastream: "unknown"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
     - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
