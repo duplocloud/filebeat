@@ -11,10 +11,7 @@ defaults:
     working-directory: diagnostics/opensearch/filebeat
 jobs:
   docker:
-    runs-on: windows-latest
-    services:
-      docker:
-        image: docker:latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3

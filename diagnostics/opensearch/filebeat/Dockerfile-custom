@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Set the PATH environment variable to include the directory containing cmd.exe
-ENV PATH=C:\Windows\System32;C:\Windows\System32\WindowsPowerShell\v1.0
+# ENV PATH=C:\Windows\System32;C:\Windows\System32\WindowsPowerShell\v1.0
 
 # Set environment variables for Filebeat version and download URL
 ENV FILEBEAT_VERSION=7.11.1
