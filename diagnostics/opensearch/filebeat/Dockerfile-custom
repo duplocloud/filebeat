@@ -6,7 +6,7 @@ ENV FILEBEAT_VERSION=7.11.1
 ENV FILEBEAT_URL=https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-${FILEBEAT_VERSION}-windows-x86_64.zip
 
 # Download and extract Filebeat
-RUN powershell -Command "Invoke-WebRequest -Uri $env:FILEBEAT_URL -OutFile 'filebeat.zip'; \
+RUN cmd.exe -Command "Invoke-WebRequest -Uri $env:FILEBEAT_URL -OutFile 'filebeat.zip'; \
     Expand-Archive -Path 'filebeat.zip' -DestinationPath 'C:\'; \
     Move-Item -Path 'C:\filebeat-${env:FILEBEAT_VERSION}-windows-x86_64' -Destination 'C:\filebeat'; \
     Remove-Item -Path 'filebeat.zip'"
