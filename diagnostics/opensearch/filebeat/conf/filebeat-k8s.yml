@@ -1,8 +1,8 @@
 filebeat.inputs:
-  - type: filestream
+  - type: log
     enabled: true
     paths:
-      - /var/log/meeraai-storage/*/*.log  # /var/www/html/storage/(app|logs)/*.log
+      - "/var/log/meeraai-storage/*/*.log"  # /var/www/html/storage/(app|logs)/*.log
 filebeat.autodiscover:
   providers:
     - type: kubernetes
