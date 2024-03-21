@@ -1,8 +1,21 @@
-FROM duplocloud/filebeat-oss:7.11.1-r7-k8s
-COPY ./diagnostics/opensearch/filebeat/conf/filebeat-custom.yml /usr/share/filebeat/filebeat.yml
-COPY ./diagnostics/opensearch/filebeat/filebeat-entrypoint.sh /filebeat-entrypoint.sh
-USER root
-RUN apk update && apk upgrade
-RUN chmod +x /filebeat-entrypoint.sh
-RUN chmod go-w /usr/share/filebeat/filebeat.yml
-USER filebeat
+# Use the official Windows Server Core image
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+
+# Set environment variables for Filebeat version and download URL
+ENV FILEBEAT_VERSION=7.11.1
+ENV FILEBEAT_URL=https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-${FILEBEAT_VERSION}-windows-x86_64.zip
+
+# Download and extract Filebeat
+RUN powershell -Command "Invoke-WebRequest -Uri $env:FILEBEAT_URL -OutFile 'filebeat.zip'; \
+    Expand-Archive -Path 'filebeat.zip' -DestinationPath 'C:\'; \
+    Move-Item -Path 'C:\filebeat-${env:FILEBEAT_VERSION}-windows-x86_64' -Destination 'C:\filebeat'; \
+    Remove-Item -Path 'filebeat.zip'"
+
+# Set the working directory
+WORKDIR "C:/filebeat"
+
+# Copy the Filebeat configuration file
+COPY ./diagnostics/opensearch/filebeat/conf/filebeat-custom.yml .
+
+# Set the entrypoint
+CMD ["./filebeat.exe", "-e", "-c", "filebeat.yml"]

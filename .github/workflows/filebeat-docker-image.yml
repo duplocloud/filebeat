@@ -47,4 +47,4 @@ jobs:
           push: true
           platforms: linux/arm64,linux/amd64
           file: diagnostics/opensearch/filebeat/Dockerfile-custom
-          tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}-custom      
+          tags: duplocloud/filebeat-oss:7.11.1-${{ github.sha }}-windows-custom   
