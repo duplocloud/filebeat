@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "meera.ai" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "meera.ai" ]
 
 defaults:
   run:
