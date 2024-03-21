@@ -8,4 +8,4 @@ COPY ./diagnostics/opensearch/filebeat-windows C:/filebeat
 WORKDIR "C:/filebeat"
 
 # Set the entrypoint
-CMD ["./filebeat.exe", "-e", "-c", "filebeat.yml"]
+CMD ["filebeat.exe", "-e", "-c", "filebeat.yml"]
