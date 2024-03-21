@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows/servercore:ltsc2022
+FROM mcr.microsoft.com/windows/servercore:4.8-windowsservercore-ltsc2019
 
 # Set the PATH environment variable to include the directory containing cmd.exe
 # ENV PATH=C:\Windows\System32;C:\Windows\System32\WindowsPowerShell\v1.0
