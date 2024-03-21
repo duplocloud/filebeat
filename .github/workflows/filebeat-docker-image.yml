@@ -12,6 +12,9 @@ defaults:
 jobs:
   docker:
     runs-on: windows-latest
+    services:
+      docker:
+        image: docker:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
