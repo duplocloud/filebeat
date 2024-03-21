@@ -1,0 +1,41 @@
+filebeat.modules:
+  - module: iis
+    access:
+      enabled: true
+      var.paths: ["c:/hh2webapp_logs_mount/*.log"]
+processors:
+- add_cloud_metadata: ~
+- add_fields:
+    target: tenant
+    fields:
+      name: '${TENANT_NAME:unknown}'
+      id: '${TENANT_ID:unknown}'
+      roleName: ${ROLE_NAME:unknown}
+- add_fields:
+    target: ''
+    fields:
+      tenantLevelIndex: '${TENANT_LEVEL_INDEX:unknown}'
+- add_fields:
+    target: ''
+    fields:
+      datastream: '${ALIAS:unknown}'
+- drop_fields:
+    fields: docker.container.labels
+    ignore_missing: true
+setup.template.name: "filebeat-%{[agent.version]}"
+setup.template.pattern: "filebeat-%{[agent.version]}-*"
+setup.template.enabled: ${FILEBEAT_SETUP_TEMPLATE_ENABLED:true}
+output.elasticsearch:
+  hosts: '${ELASTIC_HOST}'
+  indices:
+    - index: "%{[datastream]}"
+      when.not.equals:
+        datastream: "unknown"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
+      when.equals:
+        serviceLevelIndex: "yes"
+    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
+      when.equals:
+        tenantLevelIndex: "yes"
+  bulk_max_size: '${BULK_MAX_SIZE:50}'
+  worker: '${WORKER_COUNT:1}'
