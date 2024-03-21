@@ -1,5 +1,5 @@
 # Use the official Windows Server Core image
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/windows/servercore/iis:latest
 
 # Set environment variables for Filebeat version and download URL
 ENV FILEBEAT_VERSION=7.11.1
