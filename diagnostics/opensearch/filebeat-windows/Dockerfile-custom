@@ -1,0 +1,11 @@
+# Use the official Windows Server Core image
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+
+# Copy the downloaded Filebeat folder to the C:\ directory
+COPY ./diagnostics/opensearch/filebeat-windows C:/filebeat
+
+# Set the working directory
+WORKDIR "C:/filebeat"
+
+# Set the entrypoint
+CMD ["./filebeat.exe", "-e", "-c", "filebeat.yml"]
