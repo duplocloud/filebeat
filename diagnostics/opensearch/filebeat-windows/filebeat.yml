@@ -1,3 +1,6 @@
+filebeat.config.modules:
+  enabled: true
+  path: /path/to/modules.d/*.yml
 filebeat.inputs:
 - type: windows
   event_logs:
