@@ -1,8 +1,14 @@
-filebeat.modules:
-  - module: iis
-    access:
-      enabled: true
-      var.paths: ["c:/hh2webapp_logs_mount/*.log"]
+filebeat.inputs:
+- type: windows
+  event_logs:
+    - name: Application
+    - name: Security
+    - name: System
+# filebeat.modules:
+#   - module: iis
+#     access:
+#       enabled: true
+#       var.paths: ["c:/hh2webapp_logs_mount/*.log"]
 processors:
 - add_cloud_metadata: ~
 - add_fields:
