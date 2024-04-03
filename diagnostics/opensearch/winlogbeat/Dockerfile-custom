@@ -1,0 +1,11 @@
+# Use the official Windows Server Core image
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+
+# Copy the downloaded winlogbeat folder to the C:\ directory
+COPY ./diagnostics/opensearch/winlogbeat C:/winlogbeat
+
+# Set the working directory
+WORKDIR "C:/winlogbeat"
+
+# Set the entrypoint
+CMD ["winlogbeat.exe", "-e", "-c", "winlogbeat.yml"]
