@@ -1,17 +1,11 @@
-filebeat.config.modules:
-  enabled: true
-  path: /path/to/modules.d/*.yml
-filebeat.inputs:
-- type: windows
-  event_logs:
-    - name: Application
-    - name: Security
-    - name: System
-# filebeat.modules:
-#   - module: iis
-#     access:
-#       enabled: true
-#       var.paths: ["c:/hh2webapp_logs_mount/*.log"]
+filebeat.modules:
+  - module: iis
+    access:
+      enabled: true
+      var.paths: ["c:/inetpub/logs/LogFiles/*/*.log"]
+    error:
+      enabled: true
+      var.paths: ["c:/Windows/System32/LogFiles/HTTPERR/*.log"]
 processors:
 - add_cloud_metadata: ~
 - add_fields:

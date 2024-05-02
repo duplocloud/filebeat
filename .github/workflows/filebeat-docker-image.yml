@@ -1,4 +1,4 @@
-name: Custom winlogbeat image build
+name: Custom filebeat-windows image build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 defaults:
   run:
-    working-directory: diagnostics/opensearch/winlogbeat
+    working-directory: diagnostics/opensearch/filebeat-windows
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -46,5 +46,5 @@ jobs:
           context: .
           push: true
           platforms: windows/amd64
-          file: diagnostics/opensearch/winlogbeat/Dockerfile-custom
-          tags: duplocloud/winlogbeat-oss:7.11.1-${{ github.sha }}-windows-custom
+          file: diagnostics/opensearch/filebeat-windows/Dockerfile-custom
+          tags: duplocloud/filebeat-windows-oss:7.11.1-${{ github.sha }}-windows-custom
