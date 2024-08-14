@@ -11,9 +11,9 @@ processors:
 - add_fields:
   target: tenant
   fields:
-  name: '${TENANT_NAME:unknown}'
-  id: '${TENANT_ID:unknown}'
-  roleName: ${ROLE_NAME:unknown}   
+    name: '${TENANT_NAME:unknown}'
+    id: '${TENANT_ID:unknown}'
+    roleName: ${ROLE_NAME:unknown}   
 setup.template.name: "filebeat-%{[agent.version]}"
 setup.template.pattern: "filebeat-%{[agent.version]}-*" 
 output.elasticsearch:
