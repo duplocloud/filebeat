@@ -5,54 +5,15 @@ filebeat.autodiscover:
       hints.default_config:
         type: container
         paths:
-          - /var/log/containers/*-${data.container.id}.log  # CRI path
-        ignore_older: 24h
+          - /var/lib/docker/containers/1eb0f01affb9b77102610bc4f36d80f26193e3ac38c60b8686c12fdc1834c672/1eb0f01affb9b77102610bc4f36d80f26193e3ac38c60b8686c12fdc1834c672-json.log.4
 processors:
-#Drop events from other namespaces except Duplo tenants.
-- drop_event:
-    when.not.regexp:
-      kubernetes.namespace: "^duploservices-*"
 - add_cloud_metadata: ~
-#Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME
-- copy_fields:
-    fields:
-      - from: "kubernetes.labels.tenantname"
-        to: "tenant.name"
-      - from: "kubernetes.labels.tenantid"
-        to: "tenant.id"
-    fail_on_error: false
-    ignore_missing: true
-#strip out duploservice- and actual TENANT_NAME
-- replace:
-    fields:
-      - field: "tenant.name"
-        pattern: "duploservices-"
-        replacement: ""
-    ignore_missing: true
-    fail_on_error: false
-#Add fields to support tenant level index
 - add_fields:
-    target: ''
+    target: tenant
     fields:
-      tenantLevelIndex: '${TENANT_LEVEL_INDEX:unknown}'
-- add_fields:
-    target: ''
-    fields:
-      datastream: '${ALIAS:unknown}'         
-setup.template.name: "filebeat-%{[agent.version]}"
-setup.template.pattern: "filebeat-%{[agent.version]}-*"
-setup.template.enabled: ${FILEBEAT_SETUP_TEMPLATE_ENABLED:true}
+    name: '${TENANT_NAME:unknown}'
+    id: '${TENANT_ID:unknown}'
+    roleName: ${ROLE_NAME:unknown}    
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
-  indices:
-    - index: "%{[datastream]}"
-      when.not.equals:
-        datastream: "unknown"  
-    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
-      when.equals:
-        serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
-      when.equals:
-        tenantLevelIndex: "yes"
-  bulk_max_size: '${BULK_MAX_SIZE:50}'
-  worker: '${WORKER_COUNT:1}'
+  index: "filebeat-%{[agent.version]}-2024.08.10-new"
