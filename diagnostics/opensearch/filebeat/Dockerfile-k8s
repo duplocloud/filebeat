@@ -5,4 +5,4 @@ USER root
 RUN apk update && apk upgrade
 RUN chmod +x /filebeat-entrypoint.sh
 RUN chmod go-w /usr/share/filebeat/filebeat.yml
-USER filebeat
+USER root
