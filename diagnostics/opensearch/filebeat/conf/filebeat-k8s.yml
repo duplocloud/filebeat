@@ -13,7 +13,9 @@ processors:
     fields:
     name: '${TENANT_NAME:unknown}'
     id: '${TENANT_ID:unknown}'
-    roleName: ${ROLE_NAME:unknown}    
+    roleName: ${ROLE_NAME:unknown}   
+setup.template.name: "filebeat-%{[agent.version]}"
+setup.template.pattern: "filebeat-%{[agent.version]}-*" 
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   index: "filebeat-%{[agent.version]}-2024.08.10-new"
