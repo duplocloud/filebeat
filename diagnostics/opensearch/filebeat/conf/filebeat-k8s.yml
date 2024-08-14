@@ -5,7 +5,7 @@ filebeat.autodiscover:
       hints.default_config:
         type: container
         paths:
-          - /var/lib/docker/containers/1eb0f01affb9b77102610bc4f36d80f26193e3ac38c60b8686c12fdc1834c672/1eb0f01affb9b77102610bc4f36d80f26193e3ac38c60b8686c12fdc1834c672-json.log.4
+          - /var/lib/docker/containers/1eb0f01affb9b77102610bc4f36d80f26193e3ac38c60b8686c12fdc1834c672/1eb0f01affb9b77102610bc4f36d80f26193e3ac38c60b8686c12fdc1834c672-json.log.3
 processors:
 #Drop events from other namespaces except Duplo tenants.
 - drop_event:
@@ -43,7 +43,7 @@ setup.template.pattern: "filebeat-%{[agent.version]}-*"
 setup.template.enabled: ${FILEBEAT_SETUP_TEMPLATE_ENABLED:true}
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
-  index: "filebeat-%{[agent.version]}-2024.08.10-new"
+  index: "filebeat-%{[agent.version]}-2024.08.11-new"
   # indices:
   #   - index: "%{[datastream]}"
   #     when.not.equals:
