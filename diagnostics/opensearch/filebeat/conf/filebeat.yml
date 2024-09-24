@@ -11,7 +11,7 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-      - "/opt/data/log/tomcat-interface/business_withscreen.log"
+      - "/opt/data/log/*/*.log"
     fields_under_root: true
 processors:
 - add_cloud_metadata: ~
