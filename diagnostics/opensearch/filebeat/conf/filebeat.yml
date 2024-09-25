@@ -13,8 +13,11 @@ filebeat.inputs:
     paths:
       - "/opt/data/log/*/*.log"
     fields_under_root: true
-    fields:
-      log_type: log.tomcat-interface
+    processors:
+      - dissect:
+          tokenizer: "/opt/data/log/%{log_type}/%{log_file_name}.log"
+          field: "log.file.path"
+          target_prefix: "kami"
 processors:
 - add_cloud_metadata: ~
 - add_fields:
