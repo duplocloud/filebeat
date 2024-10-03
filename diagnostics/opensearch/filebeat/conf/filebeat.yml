@@ -49,7 +49,7 @@ output.elasticsearch:
     - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
+    - index: "tomcat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
     - index: "filebeat-%{[agent.version]}-kami-%{+yyyy.MM.dd}"    # New index for kami prefixed fields
