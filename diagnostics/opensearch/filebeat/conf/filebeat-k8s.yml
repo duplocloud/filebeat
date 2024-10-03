@@ -61,7 +61,7 @@ output.elasticsearch:
     - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-kami-%{+yyyy.MM.dd}"    # New index for kami prefixed field
+    - index: "tomcat-%{[agent.version]}-kami-%{+yyyy.MM.dd}"    # New index for kami prefixed field
       when.has_fields: ["kami.log_type"]
   bulk_max_size: '${BULK_MAX_SIZE:50}'
   worker: '${WORKER_COUNT:1}'
