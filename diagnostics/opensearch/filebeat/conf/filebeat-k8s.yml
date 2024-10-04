@@ -15,7 +15,7 @@ filebeat.inputs:
     fields_under_root: true
     processors:
       - dissect:
-          tokenizer: "/opt/data/log/%{log_type}/%{log_file_name}.log"
+          tokenizer: "/opt/data/log/%{log_type}/*.log"
           field: "log.file.path"
           target_prefix: "kami"
 processors:
