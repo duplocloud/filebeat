@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "docparser" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "docparser" ]
 
 defaults:
   run:

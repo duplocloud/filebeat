@@ -39,18 +39,18 @@ processors:
     target: ''
     fields:
       datastream: '${ALIAS:unknown}'         
-setup.template.name: "filebeat-%{[agent.version]}"
-setup.template.pattern: "filebeat-%{[agent.version]}-*"    
+setup.template.name: "filebeat-7.11.2"
+setup.template.pattern: "filebeat-7.11.2-*"    
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
   indices:
     - index: "%{[datastream]}"
       when.not.equals:
         datastream: "unknown"  
-    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-7.11.2-%{[tenant.name]}-%{[kubernetes.container.name]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-%{[tenant.name]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-7.11.2-%{[tenant.name]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
   bulk_max_size: '${BULK_MAX_SIZE:50}'
