@@ -37,7 +37,7 @@ output.elasticsearch:
     - index: "filebeat-%{[agent.version]}-new-%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-new-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-new-%{[tenant.name]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
   bulk_max_size: '${BULK_MAX_SIZE:50}'
