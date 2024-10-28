@@ -30,6 +30,7 @@ setup.template.name: "filebeat-%{[agent.version]}"
 setup.template.pattern: "filebeat-%{[agent.version]}-*"    
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
+  index: "filebeat-%{[agent.version]}-new-%{+yyyy.MM.dd}"
   indices:
     - index: "%{[datastream]}"
       when.not.equals:
