@@ -7,3 +7,4 @@ RUN /usr/share/logstash/bin/ruby -S gem cleanup date && \
     bin/logstash-plugin install logstash-input-azure_event_hubs
 
 COPY ./diagnostics/opensearch/logstash/logstash.conf /usr/share/logstash/pipeline/logstash.conf
+COPY ./diagnostics/opensearch/logstash/logstash.yml /usr/share/logstash/config/logstash.yml
