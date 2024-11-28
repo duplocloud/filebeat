@@ -2,7 +2,8 @@
 FROM docker.elastic.co/logstash/logstash:8.16.1
 
 # Install the OpenSearch output plugin and Azure Event Hub input plugin
-RUN bin/logstash-plugin install logstash-output-opensearch && \
+RUN /usr/share/logstash/bin/ruby -S gem cleanup date && \
+    bin/logstash-plugin install logstash-output-opensearch && \
     bin/logstash-plugin install logstash-input-azure_event_hubs
 
 COPY ./diagnostics/opensearch/logstash/logstash.conf /usr/share/logstash/pipeline/logstash.conf
