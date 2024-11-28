@@ -29,6 +29,6 @@ jobs:
         with:
           context: .
           push: true
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/amd64
           file: diagnostics/opensearch/logstash/Dockerfile
           tags: duplocloud/logstash:${{ github.sha }}    
