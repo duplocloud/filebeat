@@ -30,15 +30,15 @@ setup.template.name: "filebeat-%{[agent.version]}"
 setup.template.pattern: "filebeat-%{[agent.version]}-*"    
 output.elasticsearch:
   hosts: '${ELASTIC_HOST}'
-  index: "filebeat-%{[agent.version]}-new-%{+yyyy.MM.dd}"
+  index: "filebeat-%{[agent.version]}-${CUSTOM_INDEX_NAME:}%{+yyyy.MM.dd}"
   indices:
     - index: "%{[datastream]}"
       when.not.equals:
         datastream: "unknown"
-    - index: "filebeat-%{[agent.version]}-new-%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-${CUSTOM_INDEX_NAME:}%{[tenant.name]}-%{[docker.attrs.ROLE_NAME]}-%{+yyyy.MM.dd}"
       when.equals:
         serviceLevelIndex: "yes"
-    - index: "filebeat-%{[agent.version]}-new-%{[tenant.name]}-%{+yyyy.MM.dd}"
+    - index: "filebeat-%{[agent.version]}-${CUSTOM_INDEX_NAME:}%{[tenant.name]}-%{+yyyy.MM.dd}"
       when.equals:
         tenantLevelIndex: "yes"
   bulk_max_size: '${BULK_MAX_SIZE:50}'
