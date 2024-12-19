@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "kloudspot" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "kloudspot" ]
 
 defaults:
   run:

@@ -6,7 +6,6 @@ filebeat.autodiscover:
         type: container
         paths:
           - /var/log/containers/*-${data.container.id}.log  # CRI path
-        ignore_older: 24h
 processors:
 #Drop events from other namespaces except Duplo tenants.
 - drop_event:
