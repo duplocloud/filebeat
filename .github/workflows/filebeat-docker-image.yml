@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "included-ai-5days" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "included-ai-5days" ]
 
 defaults:
   run:
