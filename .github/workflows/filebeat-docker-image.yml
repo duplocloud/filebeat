@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "pypstream-multiarch" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "pypstream-multiarch" ]
 
 defaults:
   run:
