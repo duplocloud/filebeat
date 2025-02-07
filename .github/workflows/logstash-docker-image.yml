@@ -5,6 +5,7 @@ on:
     branches: [ "azure-event-hub" ]
   pull_request:
     branches: [ "azure-event-hub" ]
+  workflow_dispatch:
 
 defaults:
   run:
