@@ -5,6 +5,8 @@ on:
     branches: [ "azure-event-hub" ]
   pull_request:
     branches: [ "azure-event-hub" ]
+  push:
+    branches: [ "ayush-logstash-changes" ]
   workflow_dispatch:
 
 defaults:
