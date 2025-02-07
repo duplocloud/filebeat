@@ -2,11 +2,12 @@ name: Logstash image build
 
 on:
   push:
-    branches: [ "azure-event-hub" ]
+    branches: 
+      - azure-event-hub
+      - ayush-logstash-changes
   pull_request:
-    branches: [ "azure-event-hub" ]
-  push:
-    branches: [ "ayush-logstash-changes" ]
+    branches: 
+      - azure-event-hub
   workflow_dispatch:
 
 defaults:
