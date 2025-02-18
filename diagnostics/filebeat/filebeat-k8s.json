@@ -9,7 +9,7 @@
     "DockerImage": "duplocloud/filebeat:7.14.0-r4",
     "NetworkId": "default",
     "AgentPlatform": 7,
-    "Volumes": "[\n    {\n        \"Name\": \"containers\",\n        \"Path\": \"/var/lib/docker/containers\",\n        \"ReadOnly\": true,\n        \"Spec\": {\n            \"HostPath\": {\n                \"Path\": \"/var/lib/docker/containers\"\n            }\n        }\n    },\n    {\n        \"Name\": \"sock\",\n        \"Path\": \"/var/run/docker.sock\",\n        \"Spec\": {\n            \"HostPath\": {\n                \"Path\": \"/var/run/docker.sock\"\n            }\n        }\n    }\n]",
+    "Volumes": "[\n    {\n        \"Name\": \"containers\",\n        \"Path\": \"/var/lib/docker/containers\",\n        \"ReadOnly\": true,\n        \"Spec\": {\n            \"HostPath\": {\n                \"Path\": \"/var/lib/docker/containers\"\n            }\n        }\n    }\n]",
     "ExtraConfig": "",
     "AllocationTags": "",
     "ApplicationUrl": "",
