@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "pypstream-multiarch" ]
+    branches: [ "element5-remove-duplo-namespace" ]
   pull_request:
-    branches: [ "pypstream-multiarch" ]
+    branches: [ "element5-remove-duplo-namespace" ]
 
 defaults:
   run:
