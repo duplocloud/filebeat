@@ -8,15 +8,14 @@ filebeat.autodiscover:
           - /var/log/containers/*-${data.container.id}.log  # CRI path
         ignore_older: 24h
 processors:
-- drop_event:
-    when:
-      or:
-        - equals:
-            kubernetes.namespace: "kube-system"
-        - equals:
-            kubernetes.namespace: "kube-public"
-        - equals:
-            kubernetes.namespace: "kube-node-lease"
+- drop_event.when:
+    or:
+    - equals:
+        kubernetes.namespace: "kube-system"
+    - equals:
+        kubernetes.namespace: "kube-public"
+    - equals:
+        kubernetes.namespace: "kube-node-lease"
 - add_cloud_metadata: ~
 #Currently TENANT_NAME is not passed as ENV variable. Using labels to extract TENANT_NAME            
 - copy_fields:
