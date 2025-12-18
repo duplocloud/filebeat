@@ -2,9 +2,9 @@ name: Filebeat image build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "4ldata-autodiscover" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "4ldata-autodiscover" ]
 
 defaults:
   run:
