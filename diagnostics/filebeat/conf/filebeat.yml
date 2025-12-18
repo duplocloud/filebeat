@@ -1,7 +1,8 @@
-filebeat.autodiscover:
-  providers:
-    - type: docker
-      hints.enabled: true
+filebeat.inputs:
+- type: container
+  enabled: true
+  paths:
+    - /var/lib/docker/containers/*/*.log
 processors:
 - add_cloud_metadata: ~
 - add_fields:
