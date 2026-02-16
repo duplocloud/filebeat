@@ -20,6 +20,9 @@ RUN apk add --no-cache bash su-exec libc6-compat curl &&\
 
 RUN apk update && apk upgrade && rm -rf /var/cache/apk/*
 
+# Remove any default module configs that might interfere
+RUN rm -rf /usr/share/filebeat/modules.d/* /usr/share/filebeat/module
+
 COPY ./diagnostics/opensearch/filebeat/conf/filebeat-k8s.yml /usr/share/filebeat/filebeat.yml
 COPY ./diagnostics/opensearch/filebeat/filebeat-entrypoint.sh /filebeat-entrypoint.sh
 RUN chmod +x /filebeat-entrypoint.sh
