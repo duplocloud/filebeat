@@ -1,4 +1,7 @@
 monitoring.enabled: false
+http.enabled: false          
+logging.metrics.enabled: false  
+
 filebeat.autodiscover:
   providers:
     - type: kubernetes
