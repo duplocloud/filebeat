@@ -1,9 +1,9 @@
 # Filebeat
 We use hints based autodiscover of filebeat to automatically discover the servicename and other labels. 
 With recent change of filebaet config. We now support Tenant level and Service level logs. Also these images are multi arch images can also be used with graviton instances.
-Native Linux Docker image: **duplocloud/filebeat-oss:7.11.1-00895c38db61c343a16ff9c02295dc096eb82db6**
+Native Linux Docker image: **duplocloud/filebeat-oss:7.12.1-$COMMIT_SHA**
 
-K8S image: **duplocloud/filebeat-oss:7.11.1-00895c38db61c343a16ff9c02295dc096eb82db6-k8s**
+K8S image: **duplocloud/filebeat-oss:7.12.1-$COMMIT_SHA-k8s**
 
 For **Tenant level logs**: Add the env varibale `"TENANT_LEVEL_INDEX": "yes"`  
 For the **Service level logs**: add the lables to the service.  
