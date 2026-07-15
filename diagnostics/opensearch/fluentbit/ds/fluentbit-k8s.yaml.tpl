@@ -63,13 +63,13 @@ spec:
               memory: 64Mi
           livenessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/v2/health
               port: 2020
             initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/v2/health
               port: 2020
             initialDelaySeconds: 5
             periodSeconds: 15
