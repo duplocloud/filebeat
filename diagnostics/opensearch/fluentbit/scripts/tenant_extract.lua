@@ -8,7 +8,7 @@ local LOG_DIR = "/var/log/containers/"
 local function freeze(t)
     return setmetatable(t, { __newindex = function() error("attempt to modify frozen table") end })
 end
-local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = "4.2.4", hostname = HOSTNAME })
+local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = "5.0.6", hostname = HOSTNAME })
 local HOST = freeze({ name = HOSTNAME })
 local INPUT = freeze({ type = "container" })
 
