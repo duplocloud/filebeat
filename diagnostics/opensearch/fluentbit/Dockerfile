@@ -1,4 +1,4 @@
-FROM cr.fluentbit.io/fluent/fluent-bit:4.2.4
+FROM cr.fluentbit.io/fluent/fluent-bit:5.0.6
 
 COPY ./diagnostics/opensearch/fluentbit/conf/fluent-bit.conf /fluent-bit/etc/fluent-bit.conf
 COPY ./diagnostics/opensearch/fluentbit/conf/parsers.conf /fluent-bit/etc/parsers.conf
