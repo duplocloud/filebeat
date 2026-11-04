@@ -1,5 +1,6 @@
 local ALIAS = os.getenv("ALIAS") or "unknown"
 local SVC_LEVEL = os.getenv("SERVICE_LEVEL_INDEX") or "no"
+local TENANT_LEVEL = os.getenv("TENANT_LEVEL_INDEX") or "no"
 local HOSTNAME = os.getenv("HOSTNAME") or "unknown"
 local INDEX_PREFIX = os.getenv("INDEX_PREFIX") or "filebeat-fluentbit-"
 local TAG_PREFIX = "kube.var.log.containers."
@@ -50,11 +51,19 @@ function extract_tenant_and_set_index(tag, timestamp, record)
         }
     end
 
-    -- Build index prefix
+    -- Build index prefix.
+    -- Mirrors the precedence of output.elasticsearch.indices in filebeat-k8s.yml:
+    -- alias (datastream) -> service level -> tenant level -> shared default.
+    -- Tenant is lowercased and sanitised because OpenSearch rejects uppercase and
+    -- most punctuation in index names, while Kubernetes label values permit both.
+    local safe_tenant = tenant:lower():gsub("[^a-z0-9._-]", "-")
+
     if ALIAS ~= "unknown" and ALIAS ~= "" then
         record["index_prefix"] = ALIAS .. "-fb"
-    elseif SVC_LEVEL == "yes" and container_name ~= "unknown" then
-        record["index_prefix"] = INDEX_PREFIX .. container_name
+    elseif SVC_LEVEL == "yes" and tenant ~= "unknown" and container_name ~= "unknown" then
+        record["index_prefix"] = INDEX_PREFIX .. safe_tenant .. "-" .. container_name:lower()
+    elseif TENANT_LEVEL == "yes" and tenant ~= "unknown" then
+        record["index_prefix"] = INDEX_PREFIX .. safe_tenant
     else
         record["index_prefix"] = INDEX_PREFIX:gsub("%-$", "")
     end

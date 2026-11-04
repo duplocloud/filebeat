@@ -113,10 +113,20 @@ kubectl delete -f rbac/rbac-<name>.yaml
 
 ## Index prefix
 
-Indices are named `filebeat-fluentbit-YYYY.MM.DD` by default — all tenants share one
-daily index. The `filebeat-` prefix ensures logs match the pre-existing `filebeat-*`
-index pattern in OpenSearch Dashboards — backwards compatible with existing dashboards
-and saved searches. Configurable via the `INDEX_PREFIX` environment variable
+The generated DaemonSet sets `TENANT_LEVEL_INDEX: "yes"`, so indices are named
+**`filebeat-fluentbit-<tenant>-YYYY.MM.DD`** — one per tenant per day, matching
+Filebeat's per-tenant indices. Size shard capacity accordingly.
+
+| Setting | Index pattern |
+| ------- | ------------- |
+| `TENANT_LEVEL_INDEX=yes` *(shipped default)* | `filebeat-fluentbit-<tenant>-YYYY.MM.DD` |
+| `SERVICE_LEVEL_INDEX=yes` | `filebeat-fluentbit-<tenant>-<container>-YYYY.MM.DD` |
+| both `no` | `filebeat-fluentbit-YYYY.MM.DD` (single shared index) |
+| `ALIAS` set | `<ALIAS>-fb-YYYY.MM.DD` |
+
+The `filebeat-` prefix ensures logs match the pre-existing `filebeat-*` index pattern in
+OpenSearch Dashboards — backwards compatible with existing dashboards and saved searches,
+including the per-tenant names. Configurable via the `INDEX_PREFIX` environment variable
 (default: `filebeat-fluentbit-`).
 
 ## File overview
