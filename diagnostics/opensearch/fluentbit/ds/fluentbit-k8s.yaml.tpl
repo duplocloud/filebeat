@@ -37,6 +37,15 @@ spec:
               value: "On"
             - name: ES_WORKERS
               value: "1"
+            # Buffer for reading OpenSearch bulk responses. Trace_Error On means
+            # rejection reasons (mapping conflicts, invalid_index_name) arrive in
+            # that response body, so too small a buffer loses error visibility
+            # exactly when errors are happening. Set "False" for unlimited.
+            # Must stay defined: fluent-bit.conf references ${ES_BUFFER_SIZE} and
+            # Fluent Bit has no inline-default syntax, so an unset variable
+            # expands to empty rather than falling back.
+            - name: ES_BUFFER_SIZE
+              value: "2MB"
             - name: ALIAS
               value: "unknown"
             - name: TENANT_LEVEL_INDEX
