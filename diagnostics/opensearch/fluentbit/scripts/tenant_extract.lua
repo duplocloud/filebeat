@@ -9,7 +9,9 @@ local LOG_DIR = "/var/log/containers/"
 local function freeze(t)
     return setmetatable(t, { __newindex = function() error("attempt to modify frozen table") end })
 end
-local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = "5.0.6", hostname = HOSTNAME })
+-- Sourced from the Dockerfile ARG so the image tag and the reported version cannot drift.
+local AGENT_VERSION = os.getenv("FLUENTBIT_VERSION") or "unknown"
+local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = AGENT_VERSION, hostname = HOSTNAME })
 local HOST = freeze({ name = HOSTNAME })
 local INPUT = freeze({ type = "container" })
 
@@ -72,7 +74,13 @@ function extract_tenant_and_set_index(tag, timestamp, record)
     record["message"] = record["log"]
     record["log_processed"] = nil
     record["_p"] = nil
-    local filename = tag:sub(#TAG_PREFIX + 1)
+    -- Only strip the prefix when the tag actually carries it. TAG_PREFIX must stay in
+    -- sync with Kube_Tag_Prefix in fluent-bit.conf; without this check a mismatch would
+    -- slice at the wrong offset and emit a silently corrupted path instead of nothing.
+    local filename = ""
+    if tag:sub(1, #TAG_PREFIX) == TAG_PREFIX then
+        filename = tag:sub(#TAG_PREFIX + 1)
+    end
     if filename ~= "" then
         record["log"] = { file = { path = LOG_DIR .. filename } }
     else
