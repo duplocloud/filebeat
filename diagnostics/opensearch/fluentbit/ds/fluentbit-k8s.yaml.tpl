@@ -86,6 +86,11 @@ spec:
               readOnly: true
             - mountPath: /var/lib/fluentbit
               name: fluentbit-state
+            # Mount the whole directory, never subPath: subPath binds a single key,
+            # so additional files in the ConfigMap would silently never appear.
+            - mountPath: /fluent-bit/etc/conf.d
+              name: conf-d
+              readOnly: true
       dnsPolicy: ClusterFirst
       nodeSelector:
         kubernetes.io/os: linux
@@ -107,6 +112,12 @@ spec:
             path: /var/lib/fluentbit-data
             type: ""
           name: fluentbit-state
+        # optional: true keeps the DaemonSet schedulable before the ConfigMap exists,
+        # and for tenants with no annotated services at all.
+        - configMap:
+            name: fluentbit-{{DEPLOY_NAME}}-conf-d
+            optional: true
+          name: conf-d
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
