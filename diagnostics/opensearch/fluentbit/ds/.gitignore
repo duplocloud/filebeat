@@ -1,7 +1,7 @@
 *.yaml
 *.yaml-e
 !*.yaml.tpl
-# Per-service filter ConfigMaps are hand-edited after generation and are the
-# only record of how each service's Filebeat annotations were translated,
-# so they are tracked rather than ignored.
+# conf.d filter ConfigMaps are hand-authored, not generated, and are the only
+# record of how a tenant's Filebeat annotations were translated. Track them so
+# they do not share the generated-artifact exemption above.
 !configmap-conf-d-*.yaml
