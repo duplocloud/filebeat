@@ -100,6 +100,14 @@ spec:
             - mountPath: /fluent-bit/etc/conf.d
               name: conf-d
               readOnly: true
+            # Optional annotation-processor script for tenants with 10+
+            # annotated services. Absent for everyone else -- see
+            # scripts/annotation_processors.lua.tpl and tenant_extract.lua's
+            # guarded dofile(). Mounting nothing is the expected, zero-cost
+            # path under the threshold.
+            - mountPath: /fluent-bit/scripts.d
+              name: scripts-d
+              readOnly: true
       dnsPolicy: ClusterFirst
       nodeSelector:
         kubernetes.io/os: linux
@@ -127,6 +135,13 @@ spec:
             name: fluentbit-{{DEPLOY_NAME}}-conf-d
             optional: true
           name: conf-d
+        # Below the 10-service threshold this ConfigMap is never created and
+        # the mount resolves to an empty directory -- tenant_extract.lua's
+        # dofile() fails harmlessly and the hook is skipped.
+        - configMap:
+            name: fluentbit-{{DEPLOY_NAME}}-scripts-d
+            optional: true
+          name: scripts-d
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1

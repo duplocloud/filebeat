@@ -15,11 +15,22 @@ local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = AGENT_VER
 local HOST = freeze({ name = HOSTNAME })
 local INPUT = freeze({ type = "container" })
 
+-- Optional, ConfigMap-delivered annotation processor for tenants with 10+
+-- annotated services (see scripts/annotation_processors.lua.tpl). Loaded
+-- once at module load, not per record. Absent for tenants under the
+-- threshold -- generate-conf-d.sh's Match_Regex filter handles those -- so
+-- dofile() failing here is the expected, zero-cost path, not an error.
+local ANNOTATION_PROCESSOR_PATH = "/fluent-bit/scripts.d/annotation_processors.lua"
+local ok, loaded = pcall(dofile, ANNOTATION_PROCESSOR_PATH)
+local annotation_processor = (ok and type(loaded) == "function") and loaded or nil
+
 function extract_tenant_and_set_index(tag, timestamp, record)
     local k = record["kubernetes"]
     local tenant, tenant_id, container_name = "unknown", "", "unknown"
+    local pod_annotations = nil
 
     if k then
+        pod_annotations = k["annotations"]
         -- Extract tenant from labels
         local labels = k["labels"]
         if labels then
@@ -72,6 +83,14 @@ function extract_tenant_and_set_index(tag, timestamp, record)
 
     -- Rename log -> message, build log file object, remove CRI partial flag
     record["message"] = record["log"]
+
+    -- Apply the optional annotation processor (if mounted) while `message`
+    -- exists and before log_processed is cleared -- decode_json_fields
+    -- reads log_processed as its JSON source.
+    if annotation_processor then
+        annotation_processor(record, pod_annotations, record["log_processed"])
+    end
+
     record["log_processed"] = nil
     record["_p"] = nil
     -- Only strip the prefix when the tag actually carries it. TAG_PREFIX must stay in
