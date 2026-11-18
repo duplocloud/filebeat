@@ -1,5 +1,6 @@
 local ALIAS = os.getenv("ALIAS") or "unknown"
 local SVC_LEVEL = os.getenv("SERVICE_LEVEL_INDEX") or "no"
+local TENANT_LEVEL = os.getenv("TENANT_LEVEL_INDEX") or "no"
 local HOSTNAME = os.getenv("HOSTNAME") or "unknown"
 local INDEX_PREFIX = os.getenv("INDEX_PREFIX") or "filebeat-fluentbit-"
 local TAG_PREFIX = "kube.var.log.containers."
@@ -8,15 +9,28 @@ local LOG_DIR = "/var/log/containers/"
 local function freeze(t)
     return setmetatable(t, { __newindex = function() error("attempt to modify frozen table") end })
 end
-local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = "4.2.4", hostname = HOSTNAME })
+-- Sourced from the Dockerfile ARG so the image tag and the reported version cannot drift.
+local AGENT_VERSION = os.getenv("FLUENTBIT_VERSION") or "unknown"
+local AGENT = freeze({ name = HOSTNAME, type = "fluent-bit", version = AGENT_VERSION, hostname = HOSTNAME })
 local HOST = freeze({ name = HOSTNAME })
 local INPUT = freeze({ type = "container" })
+
+-- Optional, ConfigMap-delivered annotation processor for tenants with 10+
+-- annotated services (see scripts/annotation_processors.lua.tpl). Loaded
+-- once at module load, not per record. Absent for tenants under the
+-- threshold -- generate-conf-d.sh's Match_Regex filter handles those -- so
+-- dofile() failing here is the expected, zero-cost path, not an error.
+local ANNOTATION_PROCESSOR_PATH = "/fluent-bit/scripts.d/annotation_processors.lua"
+local ok, loaded = pcall(dofile, ANNOTATION_PROCESSOR_PATH)
+local annotation_processor = (ok and type(loaded) == "function") and loaded or nil
 
 function extract_tenant_and_set_index(tag, timestamp, record)
     local k = record["kubernetes"]
     local tenant, tenant_id, container_name = "unknown", "", "unknown"
+    local pod_annotations = nil
 
     if k then
+        pod_annotations = k["annotations"]
         -- Extract tenant from labels
         local labels = k["labels"]
         if labels then
@@ -50,20 +64,42 @@ function extract_tenant_and_set_index(tag, timestamp, record)
         }
     end
 
-    -- Build index prefix
+    -- Build index prefix.
+    -- Mirrors the precedence of output.elasticsearch.indices in filebeat-k8s.yml:
+    -- alias (datastream) -> service level -> tenant level -> shared default.
+    -- Tenant is lowercased and sanitised because OpenSearch rejects uppercase and
+    -- most punctuation in index names, while Kubernetes label values permit both.
+    local safe_tenant = tenant:lower():gsub("[^a-z0-9._-]", "-")
+
     if ALIAS ~= "unknown" and ALIAS ~= "" then
         record["index_prefix"] = ALIAS .. "-fb"
-    elseif SVC_LEVEL == "yes" and container_name ~= "unknown" then
-        record["index_prefix"] = INDEX_PREFIX .. container_name
+    elseif SVC_LEVEL == "yes" and tenant ~= "unknown" and container_name ~= "unknown" then
+        record["index_prefix"] = INDEX_PREFIX .. safe_tenant .. "-" .. container_name:lower()
+    elseif TENANT_LEVEL == "yes" and tenant ~= "unknown" then
+        record["index_prefix"] = INDEX_PREFIX .. safe_tenant
     else
         record["index_prefix"] = INDEX_PREFIX:gsub("%-$", "")
     end
 
     -- Rename log -> message, build log file object, remove CRI partial flag
     record["message"] = record["log"]
+
+    -- Apply the optional annotation processor (if mounted) while `message`
+    -- exists and before log_processed is cleared -- decode_json_fields
+    -- reads log_processed as its JSON source.
+    if annotation_processor then
+        annotation_processor(record, pod_annotations, record["log_processed"])
+    end
+
     record["log_processed"] = nil
     record["_p"] = nil
-    local filename = tag:sub(#TAG_PREFIX + 1)
+    -- Only strip the prefix when the tag actually carries it. TAG_PREFIX must stay in
+    -- sync with Kube_Tag_Prefix in fluent-bit.conf; without this check a mismatch would
+    -- slice at the wrong offset and emit a silently corrupted path instead of nothing.
+    local filename = ""
+    if tag:sub(1, #TAG_PREFIX) == TAG_PREFIX then
+        filename = tag:sub(#TAG_PREFIX + 1)
+    end
     if filename ~= "" then
         record["log"] = { file = { path = LOG_DIR .. filename } }
     else

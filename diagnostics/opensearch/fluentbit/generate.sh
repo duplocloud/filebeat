@@ -77,6 +77,20 @@ else
 fi
 mv "$TMP_OUT" "$K8S_OUT"
 
+# conf.d filter ConfigMap
+#
+# Not generated: the useful content is situational (namespace-wide decode with
+# exclusions, per-service index overrides, service grouping) and a commented
+# placeholder is just noise. The DaemonSet mounts
+# fluentbit-<DEPLOY_NAME>-conf-d at /fluent-bit/etc/conf.d with optional: true,
+# so Fluent Bit runs fine without it. Author it by hand when needed -- the
+# patterns are documented in the migration plan.
+#
+# Build it with --from-file, never an inline patch: a shell/JSON layer turns
+# \. into \\. and Fluent Bit loads that without error, silently matching nothing.
+#   kubectl -n <ns> create cm fluentbit-<deploy>-conf-d \
+#     --from-file=50-services.conf --dry-run=client -o yaml | kubectl apply -f -
+
 echo -e "\n${G}Generated:${Z}"
 echo -e "  ${RBAC_OUT}"
 echo -e "  ${K8S_OUT}"
@@ -87,3 +101,6 @@ echo -e "\n${B}Step 1:${Z} Apply RBAC:"
 echo -e "  kubectl apply -f ${RBAC_OUT}"
 echo -e "\n${B}Step 2:${Z} Apply the DaemonSet:"
 echo -e "  kubectl apply -f ${K8S_OUT}"
+echo -e "\n${B}Verify filters loaded${Z} (they appear by name; absence means not loaded):"
+echo -e "  kubectl -n ${NAMESPACE} port-forward <pod> 2020:2020"
+echo -e "  curl -s localhost:2020/api/v1/metrics | jq '.filter | keys'"

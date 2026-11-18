@@ -1,3 +1,7 @@
 *.yaml
 *.yaml-e
 !*.yaml.tpl
+# conf.d filter ConfigMaps are hand-authored, not generated, and are the only
+# record of how a tenant's Filebeat annotations were translated. Track them so
+# they do not share the generated-artifact exemption above.
+!configmap-conf-d-*.yaml

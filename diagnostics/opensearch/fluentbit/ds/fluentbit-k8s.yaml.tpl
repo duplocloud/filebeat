@@ -37,6 +37,15 @@ spec:
               value: "On"
             - name: ES_WORKERS
               value: "1"
+            # Buffer for reading OpenSearch bulk responses. Trace_Error On means
+            # rejection reasons (mapping conflicts, invalid_index_name) arrive in
+            # that response body, so too small a buffer loses error visibility
+            # exactly when errors are happening. Set "False" for unlimited.
+            # Must stay defined: fluent-bit.conf references ${ES_BUFFER_SIZE} and
+            # Fluent Bit has no inline-default syntax, so an unset variable
+            # expands to empty rather than falling back.
+            - name: ES_BUFFER_SIZE
+              value: "2MB"
             - name: ALIAS
               value: "unknown"
             - name: TENANT_LEVEL_INDEX
@@ -63,13 +72,13 @@ spec:
               memory: 64Mi
           livenessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/v2/health
               port: 2020
             initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/v2/health
               port: 2020
             initialDelaySeconds: 5
             periodSeconds: 15
@@ -86,6 +95,19 @@ spec:
               readOnly: true
             - mountPath: /var/lib/fluentbit
               name: fluentbit-state
+            # Mount the whole directory, never subPath: subPath binds a single key,
+            # so additional files in the ConfigMap would silently never appear.
+            - mountPath: /fluent-bit/etc/conf.d
+              name: conf-d
+              readOnly: true
+            # Optional annotation-processor script for tenants with 10+
+            # annotated services. Absent for everyone else -- see
+            # scripts/annotation_processors.lua.tpl and tenant_extract.lua's
+            # guarded dofile(). Mounting nothing is the expected, zero-cost
+            # path under the threshold.
+            - mountPath: /fluent-bit/scripts.d
+              name: scripts-d
+              readOnly: true
       dnsPolicy: ClusterFirst
       nodeSelector:
         kubernetes.io/os: linux
@@ -107,6 +129,19 @@ spec:
             path: /var/lib/fluentbit-data
             type: ""
           name: fluentbit-state
+        # optional: true keeps the DaemonSet schedulable before the ConfigMap exists,
+        # and for tenants with no annotated services at all.
+        - configMap:
+            name: fluentbit-{{DEPLOY_NAME}}-conf-d
+            optional: true
+          name: conf-d
+        # Below the 10-service threshold this ConfigMap is never created and
+        # the mount resolves to an empty directory -- tenant_extract.lua's
+        # dofile() fails harmlessly and the hook is skipped.
+        - configMap:
+            name: fluentbit-{{DEPLOY_NAME}}-scripts-d
+            optional: true
+          name: scripts-d
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1

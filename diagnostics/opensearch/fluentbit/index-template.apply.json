@@ -1,0 +1,159 @@
+{
+  "index_patterns": [
+    "filebeat-fluentbit-*"
+  ],
+  "priority": 200,
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "date_detection": false,
+      "dynamic_templates": [
+        {
+          "decoded_json_strings": {
+            "match_mapping_type": "string",
+            "mapping": {
+              "type": "keyword",
+              "ignore_above": 1024
+            }
+          }
+        }
+      ],
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "message": {
+          "type": "text"
+        },
+        "_message": {
+          "type": "text"
+        },
+        "stream": {
+          "type": "keyword"
+        },
+        "index_prefix": {
+          "type": "keyword"
+        },
+        "log": {
+          "properties": {
+            "file": {
+              "properties": {
+                "path": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "agent": {
+          "properties": {
+            "name": {
+              "type": "keyword"
+            },
+            "type": {
+              "type": "keyword"
+            },
+            "version": {
+              "type": "keyword"
+            },
+            "hostname": {
+              "type": "keyword"
+            }
+          }
+        },
+        "host": {
+          "properties": {
+            "name": {
+              "type": "keyword"
+            }
+          }
+        },
+        "input": {
+          "properties": {
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "tenant": {
+          "properties": {
+            "name": {
+              "type": "keyword"
+            },
+            "id": {
+              "type": "keyword"
+            }
+          }
+        },
+        "container": {
+          "properties": {
+            "id": {
+              "type": "keyword"
+            },
+            "runtime": {
+              "type": "keyword"
+            },
+            "image": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "kubernetes": {
+          "properties": {
+            "namespace": {
+              "type": "keyword"
+            },
+            "labels": {
+              "type": "object"
+            },
+            "container": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                },
+                "image": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "node": {
+              "properties": {
+                "hostname": {
+                  "type": "keyword"
+                },
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "pod": {
+              "properties": {
+                "uid": {
+                  "type": "keyword"
+                },
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "_annotation_unsupported": {
+          "type": "keyword"
+        },
+        "_annotation_processor_error": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}

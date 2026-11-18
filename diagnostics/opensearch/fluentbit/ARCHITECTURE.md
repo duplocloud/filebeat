@@ -45,30 +45,48 @@ performs all log restructuring in a single pass:
 
 ### Environment variables used by the Lua script
 
-| Variable              | Purpose                                   | Default               |
-| --------------------- | ----------------------------------------- | --------------------- |
-| `ALIAS`               | Override index prefix (e.g. `myalias-fb`) | `unknown`             |
-| `SERVICE_LEVEL_INDEX` | If `yes`, include container name in index | `no`                  |
-| `HOSTNAME`            | Pod hostname, used in `agent` and `host`  | `unknown`             |
-| `INDEX_PREFIX`        | Index name prefix before tenant name      | `filebeat-fluentbit-` |
+| Variable              | Purpose                                          | Default               |
+| --------------------- | ------------------------------------------------ | --------------------- |
+| `ALIAS`               | Override index prefix (e.g. `myalias-fb`)        | `unknown`             |
+| `TENANT_LEVEL_INDEX`  | If `yes`, one index per tenant                   | `no`                  |
+| `SERVICE_LEVEL_INDEX` | If `yes`, one index per tenant **and** container | `no`                  |
+| `HOSTNAME`            | Pod hostname, used in `agent` and `host`         | `unknown`             |
+| `INDEX_PREFIX`        | Index name prefix before tenant name             | `filebeat-fluentbit-` |
 
 Environment variables and static tables are cached at module load, not per-record.
 Fluent Bit processes records sequentially per worker — no concurrent Lua calls.
 
 ## Index naming
 
-| Condition                 | Index pattern                                   |
-| ------------------------- | ----------------------------------------------- |
-| `ALIAS` is set            | `{ALIAS}-fb-YYYY.MM.DD`                         |
-| `SERVICE_LEVEL_INDEX=yes` | `{INDEX_PREFIX}{container}-YYYY.MM.DD`          |
-| Default                   | `filebeat-fluentbit-YYYY.MM.DD`                 |
+Evaluated in precedence order — the first matching condition wins:
 
-The `INDEX_PREFIX` env var defaults to `filebeat-fluentbit-`, producing indices like
-`filebeat-fluentbit-2026.03.13`. All tenants share one daily index by default. The
-`filebeat-` prefix is intentional — it ensures indices are matched by the pre-existing
-`filebeat-*` index pattern in OpenSearch Dashboards, providing backwards compatibility
-with existing dashboards, saved searches, and queries without requiring a new index
-pattern. To split indices per service, set `SERVICE_LEVEL_INDEX=yes`.
+| Condition                 | Index pattern                                    |
+| ------------------------- | ------------------------------------------------ |
+| `ALIAS` is set            | `{ALIAS}-fb-YYYY.MM.DD`                          |
+| `SERVICE_LEVEL_INDEX=yes` | `{INDEX_PREFIX}{tenant}-{container}-YYYY.MM.DD`  |
+| `TENANT_LEVEL_INDEX=yes`  | `{INDEX_PREFIX}{tenant}-YYYY.MM.DD`              |
+| Default                   | `filebeat-fluentbit-YYYY.MM.DD`                  |
+
+This mirrors the precedence of `output.elasticsearch.indices` in `filebeat-k8s.yml`.
+The tenant-level and service-level branches both fall through to the shared default if
+the tenant cannot be determined, so an index is never named after `unknown`.
+
+Tenant names are lowercased before use — OpenSearch rejects uppercase index names,
+whereas Kubernetes label values permit them.
+
+**The shipped DaemonSet template sets `TENANT_LEVEL_INDEX: "yes"`**, so the deployed
+default is one index *per tenant* (`filebeat-fluentbit-acme-2026.03.13`), matching
+Filebeat's per-tenant indices. Plan shard capacity for one index per tenant per day.
+Only a deployment that overrides it to `"no"` gets a single shared daily index.
+
+The `INDEX_PREFIX` env var defaults to `filebeat-fluentbit-`. The `filebeat-` prefix is
+intentional — it ensures indices are matched by the pre-existing `filebeat-*` index
+pattern in OpenSearch Dashboards, providing backwards compatibility with existing
+dashboards, saved searches, and queries without requiring a new index pattern. This
+holds for the per-tenant names too.
+
+Setting `SERVICE_LEVEL_INDEX=yes` multiplies index count by the number of distinct
+containers per tenant — verify `max_shards_per_node` headroom before enabling it.
 
 ## Sample output document
 
@@ -90,7 +108,7 @@ pattern. To split indices per service, set `SERVICE_LEVEL_INDEX=yes`.
   "agent": { "name": "fluentbit-dev-ds-x222z", "type": "fluent-bit", "version": "4.2.4", "hostname": "fluentbit-dev-ds-x222z" },
   "host": { "name": "fluentbit-dev-ds-x222z" },
   "input": { "type": "container" },
-  "index_prefix": "filebeat-fluentbit"
+  "index_prefix": "filebeat-fluentbit-dev"
 }
 ```
 
@@ -203,8 +221,8 @@ Set in the DaemonSet template and consumed by `fluent-bit.conf` or the Lua scrip
 | `ES_TLS`              | fluent-bit.conf | TLS on/off (default `On`)                    |
 | `ES_WORKERS`          | fluent-bit.conf | ES output workers (default `1`)              |
 | `ALIAS`               | Lua script      | Override index prefix                        |
-| `TENANT_LEVEL_INDEX`  | (reserved)      | Tenant-level index flag                      |
-| `SERVICE_LEVEL_INDEX` | Lua script      | Include container name in index if `yes`     |
+| `TENANT_LEVEL_INDEX`  | Lua script      | One index per tenant if `yes`                |
+| `SERVICE_LEVEL_INDEX` | Lua script      | One index per tenant + container if `yes`    |
 | `INDEX_PREFIX`        | Lua script      | Index prefix (default `filebeat-fluentbit-`) |
 
 ## Docker image

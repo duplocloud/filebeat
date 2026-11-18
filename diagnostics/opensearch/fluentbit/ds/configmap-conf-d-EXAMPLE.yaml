@@ -1,0 +1,137 @@
+# Reference only — do not apply as-is.
+#
+# Copy to configmap-conf-d-<namespace>.yaml, keep the blocks you need, replace
+# every <placeholder>, then apply. Every pattern below was verified against a
+# live cluster on 2026-11-04; measured results are quoted inline.
+#
+# -----------------------------------------------------------------------------
+# HOW IT IS WIRED
+#
+#   fluent-bit.conf includes /fluent-bit/etc/conf.d/*.conf AFTER the Lua filter.
+#   That ordering is load-bearing:
+#     - `message` only exists once tenant_extract.lua renames log -> message,
+#       so a filter placed before it silently no-ops (Key_Name finds nothing).
+#     - `index_prefix` is set by the Lua, so a later filter can override it.
+#       That is what makes per-service index routing possible without code.
+#
+#   The DaemonSet mounts fluentbit-<deploy>-conf-d with optional: true, so
+#   Fluent Bit runs normally when this ConfigMap does not exist.
+#
+# -----------------------------------------------------------------------------
+# TAG ANATOMY — everything here matches on the tag
+#
+#   kube.var.log.containers.<pod>_<namespace>_<container>-<id>.log
+#
+#   MATCH ON POD PREFIX, NEVER CONTAINER NAME. Container names collide: in the
+#   reference cluster both the `log-generator` and `notification-log-generator`
+#   Deployments run a container named `log-generator`. SERVICE_LEVEL_INDEX=yes
+#   keys on container and silently merged both services into one index. Pod
+#   prefixes are unique per Deployment.
+#
+#   ANCHOR IMMEDIATELY AFTER `containers.` so an entry matches only pods whose
+#   name STARTS with it. Unanchored, `log-generator` also captures
+#   `notification-log-generator`.
+#
+# -----------------------------------------------------------------------------
+# APPLYING — use --from-file, never an inline patch
+#
+#   Writing these regexes through a shell or JSON patch layer turns \. into \\.
+#   Fluent Bit loads that without error and matches nothing. It is invisible:
+#   the filters still appear in /api/v1/metrics.
+#
+#     kubectl -n <ns> create cm fluentbit-<deploy>-conf-d \
+#       --from-file=50-services.conf --dry-run=client -o yaml | kubectl apply -f -
+#
+#   Then confirm what was stored, and that the filters actually loaded:
+#     kubectl -n <ns> get cm fluentbit-<deploy>-conf-d \
+#       -o jsonpath='{.data.50-services\.conf}' | grep Match_Regex
+#     kubectl -n <ns> port-forward <pod> 2020:2020
+#     curl -s localhost:2020/api/v1/metrics | jq '.filter | keys'
+# -----------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentbit-<namespace>-conf-d
+  namespace: <namespace>
+data:
+  50-services.conf: |
+    # =========================================================================
+    # PATTERN A — JSON decode for the namespace, minus named exceptions
+    # =========================================================================
+    # Reproduces the Filebeat annotations
+    #   co.elastic.logs/processors.N.copy_fields        message -> _message
+    #   co.elastic.logs/processors.N.decode_json_fields fields=message target=""
+    #
+    # Scoped to the namespace rather than per service: enumerating 100 annotated
+    # services would make every new deployment a platform-side edit. Name only
+    # the services that must NOT be decoded.
+    #
+    # Most unannotated services need no entry — the parser filter only modifies
+    # a record when the value actually parses as JSON, so plain-text services
+    # pass through untouched. Only a service that emits JSON but must not be
+    # decoded belongs in the lookahead.
+    #
+    # Order matters: modify must precede parser, or _message captures the
+    # already-decoded value instead of the raw JSON string.
+    #
+    # Measured: annotated service 27593/27593 decoded, excluded service 0/27677.
+
+    [FILTER]
+        Name        modify
+        Match_Regex ^kube\.var\.log\.containers\.(?!(<excluded-svc-a>|<excluded-svc-b>)-)[^_]+_<namespace>_
+        Copy        message _message
+
+    [FILTER]
+        Name         parser
+        Match_Regex  ^kube\.var\.log\.containers\.(?!(<excluded-svc-a>|<excluded-svc-b>)-)[^_]+_<namespace>_
+        Key_Name     message
+        Parser       json
+        Reserve_Data On
+
+    # Find exclusion candidates — unannotated services that still emit JSON:
+    #   kubectl get pods -n <namespace> -o json | jq -r '.items[]
+    #     | select(.metadata.annotations | to_entries[]? | .key
+    #              | startswith("co.elastic.logs/processors") | not)
+    #     | .metadata.name' \
+    #   | while read p; do
+    #       kubectl logs -n <namespace> "$p" --tail=1 2>/dev/null \
+    #         | grep -q '^\s*{' && echo "JSON  -> $p (exclude)" || echo "plain -> $p (skip)"
+    #     done
+
+    # =========================================================================
+    # PATTERN B — give ONE service its own index
+    # =========================================================================
+    # tenant_extract.lua has already set index_prefix to the tenant default.
+    # This runs afterwards and overrides it for matching pods only.
+    #
+    # Prefer this over SERVICE_LEVEL_INDEX=yes, which is global, keys on
+    # container name, and gives every ephemeral pod (Jobs, CronJobs,
+    # kubectl run) its own daily index.
+    #
+    # Measured: service 37421 docs in its own index, 0 in the tenant index;
+    # the similarly-named sibling stayed on the tenant default.
+
+    [FILTER]
+        Name        modify
+        Match_Regex ^kube\.var\.log\.containers\.<service-x>-[^_]+_<namespace>_
+        Set         index_prefix filebeat-fluentbit-<tenant>-<service-x>
+
+    # =========================================================================
+    # PATTERN C — several services SHARE one index
+    # =========================================================================
+    # Same mechanism, alternation instead of a single name. Keep groups
+    # disjoint: if a pod matches two blocks the last Set wins, silently.
+    #
+    # Measured: A 35382 and B 35579 both in the group index, C 17087 on the
+    # tenant default, no leakage either direction.
+
+    [FILTER]
+        Name        modify
+        Match_Regex ^kube\.var\.log\.containers\.(<service-a>|<service-b>)-[^_]+_<namespace>_
+        Set         index_prefix filebeat-fluentbit-<tenant>-<group-name>
+
+    # =========================================================================
+    # PATTERN D — everything else
+    # =========================================================================
+    # No block required. Unmatched pods keep the index_prefix the Lua already
+    # set, so the tenant index is the default rather than something configured.
